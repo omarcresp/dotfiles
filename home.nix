@@ -120,8 +120,7 @@
         {
           plugin = tmuxPlugins.tokyo-night-tmux;
           extraConfig = ''
-            set -g @theme_plugin_datetime_format "%a %H:%M"
-            set -g @theme_right_separator " "
+            set -g @tokyo-night-tmux_show_git 0
           '';
         }
       ];
