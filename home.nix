@@ -1,4 +1,4 @@
-{ pkgs, zen-browser, cursor, ... }:
+{ pkgs, zen-browser, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -36,7 +36,6 @@
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
   ] ++ [
     zen-browser.packages."${pkgs.system}".default
-    cursor.packages."${pkgs.system}".default
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

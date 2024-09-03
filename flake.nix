@@ -11,10 +11,9 @@
 
     # External flakes
     zen-browser.url = "github:MarceColl/zen-browser-flake";
-    cursor.url = "github:omarcresp/cursor-flake/main";
   };
 
-  outputs = { nixpkgs, home-manager, zen-browser, cursor, ... }:
+  outputs = { nixpkgs, home-manager, zen-browser, ... }:
   let
     lib = nixpkgs.lib;
     hlib = home-manager.lib;
@@ -33,7 +32,7 @@
         jackcres = hlib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./home.nix ];
-          extraSpecialArgs = { inherit zen-browser; inherit cursor; };
+          extraSpecialArgs = { inherit zen-browser; };
         };
       };
     };
