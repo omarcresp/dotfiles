@@ -19,6 +19,7 @@
   home.packages = with pkgs; [
     cargo
     rustc
+
     fzf
     xclip
     zsh
@@ -26,8 +27,11 @@
     lazygit
     tokei
     ripgrep
+
     nodejs_20
     bun
+
+    discord
 
     # Legacy
     wezterm
