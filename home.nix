@@ -29,6 +29,7 @@
     lazygit
     tokei
     ripgrep
+    logiops
 
     nodejs_20
     bun
