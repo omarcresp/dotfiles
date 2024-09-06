@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # .folders is a file that contains the list of parent folders, one per line
 # parent_folders should be a list to be used in a for loop
 parent_folders=`cat ~/.folders | tr '\n' ' '`

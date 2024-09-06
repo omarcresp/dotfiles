@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 current_session=$(tmux display-message -p '#S')
 current_window=$(tmux display-message -p '#I')
 current_pane=$(tmux display-message -p '#P')
