@@ -21,6 +21,7 @@
   home.packages = with pkgs; [
     cargo
     rustc
+    silicon
 
     fzf
     xclip
