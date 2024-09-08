@@ -84,12 +84,13 @@
   services.kanata.enable = true;
   services.kanata.keyboards.latam.config = ''
     (defsrc
-      caps esc lctl)
+      caps esc lctl ')
 
     (deflayermap (default-layer)
-      caps (tap-hold 100 100 esc lctl)
+      caps (tap-hold 50 120 esc lctl)
       esc caps
       lctl XX
+      ' (tap-hold 50 150 ' lctl)
     )
   '';
 
