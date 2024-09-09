@@ -14,11 +14,16 @@
       "$mainMod" = "SUPER";
       bind = [
         "$mainMod, mouse:272, movewindow"
+
         "$mainMod, q, exec, zen"
         "$mainMod, w, exec, kitty"
         "$mainMod, e, exec, kitty nnn"
+
         "$mainMod, a, exec, swaync-client -t"
+
         "$mainMod, M, exit"
+
+        "$mainMod, Tab, focusmonitor, +1"
       ] ++ (
         # workspaces
         # binds $mod + [shift +] {1..9} to [move to] workspace {1..9}
