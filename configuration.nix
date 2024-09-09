@@ -110,8 +110,13 @@
   };
 
   # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "jackcres";
+  # services.displayManager.autoLogin.enable = true;
+  services.getty.autologinUser = "jackcres";
+  environment.loginShellInit = ''
+    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+      exec Hyprland
+    fi
+  '';
 
   # Install firefox.
   # programs.firefox = {

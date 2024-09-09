@@ -31,7 +31,7 @@
       homeConfigurations = {
         jackcres = hlib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./home.nix ];
+          modules = [ ./home.nix ./hyprland.nix ];
           extraSpecialArgs = { inherit zen-browser; };
         };
       };
