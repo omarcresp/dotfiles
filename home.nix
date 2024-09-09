@@ -105,6 +105,7 @@
 
   programs.kitty = {
     enable = true;
+    theme = "Tokyo Night";
   };
 
   # Enable fontconfig
