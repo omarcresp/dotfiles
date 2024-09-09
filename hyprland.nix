@@ -5,7 +5,8 @@
     systemd.enable = true;
     settings = {
       monitor = [
-        "AU Optronics 0x1999, 1366x768@60, 0x0, 1"
+        "eDP-1, 1366x768@60, 0x0, 1"
+        "HDMI-A-1, 1920x1080@74.97, auto-left, 1"
       ];
       "exec-once" = [
         "waybar"
@@ -17,6 +18,7 @@
         "$mainMod, w, exec, kitty"
         "$mainMod, e, exec, nnn"
         "$mainMod, a, exec, swaync-client -t"
+        "$mainMod, M, exit"
       ] ++ (
         # workspaces
         # binds $mod + [shift +] {1..9} to [move to] workspace {1..9}

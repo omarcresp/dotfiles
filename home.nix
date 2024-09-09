@@ -36,7 +36,7 @@
     bun
     yarn
 
-    discord
+    webcord
 
     # Legacy
     # wezterm
