@@ -16,7 +16,7 @@
         "$mainMod, mouse:272, movewindow"
         "$mainMod, q, exec, zen"
         "$mainMod, w, exec, kitty"
-        "$mainMod, e, exec, nnn"
+        "$mainMod, e, exec, kitty nnn"
         "$mainMod, a, exec, swaync-client -t"
         "$mainMod, M, exit"
       ] ++ (
