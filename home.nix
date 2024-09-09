@@ -14,6 +14,8 @@
   # release notes.
   home.stateVersion = "24.05"; # Please read the comment before changing.
 
+  wayland.windowManager.hyprland.enable = true;
+
   nixpkgs.config.allowUnfree = true;
 
   # The home.packages option allows you to install Nix packages into your
@@ -39,7 +41,7 @@
     discord
 
     # Legacy
-    wezterm
+    # wezterm
 
     # Install only the JetBrainsMono nerdfont
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
@@ -53,7 +55,7 @@
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
-    ".wezterm.lua".source = ./legacy/wezterm.lua;
+    # ".wezterm.lua".source = ./legacy/wezterm.lua;
     ".config/tmux/tmux-killer.sh".source = ./legacy/tmux-killer.sh;
     ".config/tmux/session-wizard.sh".source = ./legacy/session-wizard.sh;
     ".config/tmux/tmux.sh".source = ./legacy/tmux.sh;
@@ -101,6 +103,13 @@
     s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
     s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
     s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
+  };
+
+  programs.kitty = {
+    enable = true;
+    settings = {
+      font_family = "JetBrainsMon";
+    };
   };
 
   # Enable fontconfig
