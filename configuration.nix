@@ -48,6 +48,7 @@
   # Enable the Budgie Desktop environment.
   # services.xserver.displayManager.lightdm.enable = true;
   # services.xserver.desktopManager.budgie.enable = true;
+  programs.hyprland.enable = true;
 
   # Configure keymap in X11
   # services.xserver.xkb = {
@@ -113,11 +114,11 @@
   services.displayManager.autoLogin.user = "jackcres";
 
   # Install firefox.
-  programs.firefox = {
-    enable = true;
-    package = pkgs.firefox;
-    nativeMessagingHosts.packages = [ pkgs.firefoxpwa ];
-  };
+  # programs.firefox = {
+  #   enable = true;
+  #   package = pkgs.firefox;
+  #   nativeMessagingHosts.packages = [ pkgs.firefoxpwa ];
+  # };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -127,14 +128,24 @@
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    firefoxpwa
+    # firefoxpwa
     htop
     gcc
     zip
     unzip
     kanata
     citrix_workspace
+
+    # Wayland
+    waybar
+    dunst
+    libnotify
+    swww
   ];
+
+  # TODO: Research about desktop portals and alternativies
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   environment.variables = { EDITOR = "vim"; };
 
