@@ -12,6 +12,7 @@
       ];
       "$mainMod" = "SUPER";
       bind = [
+        "$mainMod, mouse:272, movewindow"
         "$mainMod, q, exec, zen"
         "$mainMod, w, exec, kitty"
         "$mainMod, e, exec, nnn"
