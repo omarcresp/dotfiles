@@ -133,7 +133,11 @@
           plugin = tmuxPlugins.tokyo-night-tmux;
           extraConfig = ''
             set -g @tokyo-night-tmux_show_git 0
+
             set -g @tokyo-night-tmux_window_id_style none
+
+            set -g @tokyo-night-tmux_show_battery_widget 1
+            set -g @tokyo-night-tmux_battery_name BAT0
           '';
         }
       ];
