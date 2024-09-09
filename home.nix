@@ -24,9 +24,9 @@
     silicon
 
     fzf
-    xclip
+    # xclip
     zsh
-    xdotool
+    # xdotool
     lazygit
     tokei
     ripgrep
