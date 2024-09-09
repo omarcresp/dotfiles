@@ -105,6 +105,10 @@
 
   programs.kitty = {
     enable = true;
+    font = {
+      name = "JetBrainsMono";
+      size = 12;
+    };
     theme = "Tokyo Night";
   };
 

@@ -143,7 +143,8 @@
 
     # Wayland
     waybar
-    dunst
+    libsForQt5.qt5.qtwayland
+    # libsForQt6.qt6.qtwayland
     libnotify
     swww
   ];
