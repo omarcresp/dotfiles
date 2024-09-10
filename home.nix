@@ -1,4 +1,4 @@
-{ pkgs, zen-browser, ... }:
+{ pkgs, zen-browser, ulauncher, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -24,9 +24,7 @@
     silicon
 
     fzf
-    # xclip
     zsh
-    # xdotool
     lazygit
     tokei
     ripgrep
@@ -46,6 +44,7 @@
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
   ] ++ [
     zen-browser.packages."${pkgs.system}".default
+    ulauncher.packages."${pkgs.system}".default
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

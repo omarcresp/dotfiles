@@ -24,6 +24,7 @@
         "$mainMod, M, exit"
 
         "$mainMod, Tab, focusmonitor, +1"
+        "$mainMod, Space, exec, ulauncher-toggle"
       ] ++ (
         # workspaces
         # binds $mod + [shift +] {1..9} to [move to] workspace {1..9}
