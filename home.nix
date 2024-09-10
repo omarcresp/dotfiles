@@ -36,6 +36,7 @@
     bun
     yarn
 
+    code-cursor
     webcord
 
     # Legacy
