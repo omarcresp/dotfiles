@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   wayland.windowManager.hyprland = {
     enable = true;
@@ -64,8 +64,38 @@
     enable = true;
   };
 
-
   programs.nnn = {
     enable = true;
+  };
+
+  programs.waybar = {
+    enable = true;
+    settings = {
+        mainBar = {
+        layer = "top";
+        position = "top";
+        height = 30;
+        output = [
+          "HDMI-A-1"
+        ];
+        modules-left = [ "sway/workspaces" "sway/mode" ];
+        modules-center = [ "sway/window" "custom/hello-from-waybar" ];
+        modules-right = [ "temperature" ];
+
+        "sway/workspaces" = {
+          disable-scroll = true;
+          all-outputs = true;
+        };
+
+        "custom/hello-from-waybar" = {
+          format = "hello {}";
+          max-length = 40;
+          interval = "once";
+          exec = pkgs.writeShellScript "hello-from-waybar" ''
+            echo "from within waybar"
+          '';
+        };
+      };
+    };
   };
 }

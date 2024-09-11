@@ -106,7 +106,7 @@
   users.users.jackcres = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" ];
   };
 
   # Enable automatic login for the user.
@@ -142,7 +142,6 @@
     citrix_workspace
 
     # Wayland
-    waybar
     libsForQt5.qt5.qtwayland
     # libsForQt6.qt6.qtwayland
     libnotify
@@ -152,6 +151,10 @@
   # TODO: Research about desktop portals and alternativies
   xdg.portal.enable = true;
   xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
+  # Enables support for Bluetooth
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
 
   environment.variables = { EDITOR = "vim"; };
 

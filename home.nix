@@ -37,6 +37,10 @@
     code-cursor
     webcord
 
+    rofi
+    bluez
+    rofi-bluetooth
+
     # Legacy
     # wezterm
 
