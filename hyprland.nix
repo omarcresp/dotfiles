@@ -72,13 +72,13 @@
   programs.waybar = {
     enable = true;
     settings = {
-        mainBar = {
+      mainBar = {
         layer = "top";
         position = "top";
         height = 30;
-        output = [
-          "HDMI-A-1"
-        ];
+        # output = [
+        #   "HDMI-A-1"
+        # ];
         modules-left = [ "sway/workspaces" "sway/mode" ];
         modules-center = [ "sway/window" "custom/hello-from-waybar" ];
         modules-right = [ "temperature" ];
