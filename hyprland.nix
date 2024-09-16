@@ -61,16 +61,19 @@
     extraConfig = builtins.readFile ./legacy/hyprland.conf;
   };
 
-  services.swaync = {
-    enable = true;
-  };
-
-  programs.nnn = {
-    enable = true;
-  };
+  services.swaync.enable = true;
+  programs.nnn.enable = true;
 
   programs.waybar = {
     enable = true;
+    style = ''
+      window#waybar {
+        background: transparent;
+        border: none;
+        color: white;
+        margin: 16px;
+      }
+    '';
     settings = {
       mainBar = {
         layer = "top";
@@ -79,22 +82,42 @@
         # output = [
         #   "HDMI-A-1"
         # ];
-        modules-left = [ "sway/workspaces" "sway/mode" ];
-        modules-center = [ "sway/window" "custom/hello-from-waybar" ];
-        modules-right = [ "temperature" ];
+        modules-left = [ "group/group-power" ];
+        modules-center = [ "hyprland/window" ];
+        modules-right = [ "battery" "clock" ];
 
-        "sway/workspaces" = {
+        "hyprland/workspaces" = {
           disable-scroll = true;
           all-outputs = true;
         };
 
-        "custom/hello-from-waybar" = {
-          format = "hello {}";
-          max-length = 40;
-          interval = "once";
-          exec = pkgs.writeShellScript "hello-from-waybar" ''
-            echo "from within waybar"
-          '';
+        "group/group-power" = {
+          "orientation" = "horizontal";
+          "drawer" = {
+            "transition-duration" = 500;
+            "children-class" = "not-power";
+            "transition-left-to-right" = true;
+          };
+          "modules" = [
+            "custom/power" # First element is the "group leader" and won't ever be hidden
+            "custom/reboot"
+            "custom/quit"
+          ];
+        };
+        "custom/quit" = {
+          "format" = "󰗼";
+          "tooltip" = false;
+          "on-click" = "hyprctl dispatch exit";
+        };
+        "custom/reboot" = {
+          "format" = "󰜉";
+          "tooltip" = false;
+          "on-click" = "reboot";
+        };
+        "custom/power" = {
+          "format" = "";
+          "tooltip" = false;
+          "on-click" = "shutdown now";
         };
       };
     };
