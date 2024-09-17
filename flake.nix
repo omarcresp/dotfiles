@@ -2,7 +2,7 @@
   description = "JackCres Flake Config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "nixpkgs/master";
 
     home-manager = {
       url = "github:nix-community/home-manager/master";

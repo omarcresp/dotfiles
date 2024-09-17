@@ -23,8 +23,9 @@
     rustc
     silicon
 
+    btop
+    fastfetch
     fzf
-    zsh
     lazygit
     tokei
     ripgrep
@@ -40,9 +41,6 @@
     rofi
     bluez
     rofi-bluetooth
-
-    # Legacy
-    # wezterm
 
     # Install only the JetBrainsMono nerdfont
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
@@ -91,13 +89,11 @@
     JN_DOTFILES = "$HOME/.config/dotfiles/";
   };
 
-  # Bash config
-  programs.bash.enable = true;
-  programs.bash.shellAliases = {
+  programs.fish.enable = true;
+  programs.fish.shellAliases = {
     jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
     jn-system-switch = "sudo nixos-rebuild switch --flake $JN_DOTFILES";
     jn-update = "nix flake update $JN_DOTFILES";
-    vi-dot = "cd $JN_DOTFILES;nvim";
 
     tm = "sh $HOME/.config/tmux/tmux.sh";
 
@@ -105,6 +101,11 @@
     s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
     s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
     s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
+  };
+  programs.starship = {
+    enable = true;
+    enableTransience = true;
+    enableBashIntegration = false;
   };
 
   programs.kitty = {
@@ -180,7 +181,7 @@
       unbind p
       unbind P
       bind p display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && SESSION_WIZARD_CMD="nvim" $HOME/.config/tmux/session-wizard.sh'
-      set -g @session-wizard 'P'
+      bind P display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && $HOME/.config/tmux/session-wizard.sh'
 
       # Set status bar to top
       set -g status-position top

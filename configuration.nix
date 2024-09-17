@@ -112,6 +112,9 @@
     extraGroups = [ "networkmanager" "wheel" "uinput" "input" ];
   };
 
+  programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
+
   # Enable automatic login for the user.
   # services.displayManager.autoLogin.enable = true;
   services.getty.autologinUser = "jackcres";
@@ -136,8 +139,6 @@
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
-    # firefoxpwa
-    htop
     gcc
     zip
     unzip
