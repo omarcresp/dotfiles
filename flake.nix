@@ -4,10 +4,8 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # External flakes
     zen-browser.url = "github:MarceColl/zen-browser-flake";
@@ -17,7 +15,7 @@
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, zen-browser, ulauncher, ... }:
+  outputs = { nixpkgs, home-manager, ... }@inputs:
   let
     lib = nixpkgs.lib;
     hlib = home-manager.lib;
@@ -36,7 +34,7 @@
         jackcres = hlib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./home.nix ./hyprland.nix ];
-          extraSpecialArgs = { inherit zen-browser; inherit ulauncher; };
+          extraSpecialArgs = { inherit inputs; };
         };
       };
     };

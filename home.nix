@@ -1,4 +1,4 @@
-{ pkgs, zen-browser, ulauncher, ... }:
+{ pkgs, inputs, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -45,8 +45,8 @@
     # Install only the JetBrainsMono nerdfont
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
   ] ++ [
-    zen-browser.packages."${pkgs.system}".default
-    ulauncher.packages."${pkgs.system}".default
+    inputs.zen-browser.packages."${pkgs.system}".default
+    inputs.ulauncher.packages."${pkgs.system}".default
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
