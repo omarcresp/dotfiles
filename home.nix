@@ -114,7 +114,7 @@
       name = "JetBrainsMono";
       size = 12;
     };
-    theme = "Tokyo Night";
+    themeFile = "tokyo_night_night";
   };
 
   # Enable fontconfig
