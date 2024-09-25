@@ -24,11 +24,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1726863345,
-        "narHash": "sha256-fjbKe1/UJpLT6tQLAKJ/djJFdnmAh2kkdsgmylyFrQA=",
+        "lastModified": 1727111745,
+        "narHash": "sha256-EYLvFRoTPWtD+3uDg2wwQvlz88OrIr3zld+jFE5gDcY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "dfe4d334b172071e7189d971ddecd3a7f811b48d",
+        "rev": "21c021862fa696c8199934e2153214ab57150cb6",
         "type": "github"
       },
       "original": {
@@ -40,11 +40,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1726652927,
-        "narHash": "sha256-WO6Lmbn37PlamY2fDg3B187THkSKU/W01z8SxoIqJd0=",
+        "lastModified": 1727089097,
+        "narHash": "sha256-ZMHMThPsthhUREwDebXw7GX45bJnBCVbfnH1g5iuSPc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "294eb5975def0caa718fca92dc5a9d656ae392a9",
+        "rev": "568bfef547c14ca438c56a0bece08b8bb2b71a9c",
         "type": "github"
       },
       "original": {
@@ -87,11 +87,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1726426162,
-        "narHash": "sha256-ozjJhxorEHZs0euUdGVUQBF3MDWxDtl/iM8awpo14P8=",
+        "lastModified": 1726926294,
+        "narHash": "sha256-fklmeUnqT07OwLIj6yo05/xob9EHsW8B8J3YECRaRR8=",
         "owner": "Ulauncher",
         "repo": "Ulauncher",
-        "rev": "f1359ab72ef34e354fad1dcc2588bd88cf0b866f",
+        "rev": "56d15e0391cf2e685d9981738304e7cdf81a425a",
         "type": "github"
       },
       "original": {
@@ -108,15 +108,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1726001766,
-        "narHash": "sha256-ADvEWfo0AuHR06ah1nnzOyhsG05/b5QpUc7vFNbiEfM=",
-        "owner": "MarceColl",
+        "lastModified": 1727223397,
+        "narHash": "sha256-vANydBtgbiO8KGYGeAbmXcwZcMn9DY0qldEN0xOUgOM=",
+        "owner": "omarcresp",
         "repo": "zen-browser-flake",
-        "rev": "06505a088396e2c0b9ad100302502783a6bcdb40",
+        "rev": "f803f281e05a9aa5cc02d92715493b5655a97d96",
         "type": "github"
       },
       "original": {
-        "owner": "MarceColl",
+        "owner": "omarcresp",
         "repo": "zen-browser-flake",
         "type": "github"
       }

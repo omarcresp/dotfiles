@@ -8,7 +8,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # External flakes
-    zen-browser.url = "github:MarceColl/zen-browser-flake";
+    zen-browser.url = "github:omarcresp/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     ulauncher.url = "github:Ulauncher/Ulauncher/v6";
