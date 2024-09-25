@@ -62,7 +62,10 @@
   };
 
   services.swaync.enable = true;
-  programs.nnn.enable = true;
+  programs.nnn = {
+    enable = true;
+    package = pkgs.nnn.override ({ withNerdIcons = true; });
+  };
 
   programs.waybar = {
     enable = true;
