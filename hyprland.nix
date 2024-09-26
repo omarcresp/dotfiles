@@ -36,7 +36,7 @@
               "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
             ]
           )
-          5
+          9
         )
       );
       # https://wiki.hyprland.org/Configuring/Variables/#general

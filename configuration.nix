@@ -94,7 +94,7 @@
       ' (tap-hold 50 150 ' lctl)
     )
   '';
-  
+
   # Enable upower
   services.upower.enable = true;
 
