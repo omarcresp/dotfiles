@@ -37,6 +37,7 @@
 
     code-cursor
     webcord
+    obs-studio
 
     rofi
     bluez
