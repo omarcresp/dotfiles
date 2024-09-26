@@ -87,6 +87,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles/";
+    NNN_FIFO = "/tmp/nnn.fifo";
   };
 
   programs.fish.enable = true;
@@ -113,6 +114,9 @@
     font = {
       name = "JetBrainsMono";
       size = 12;
+    };
+    settings = {
+      allow_remote_control = "yes";
     };
     themeFile = "tokyo_night_night";
   };

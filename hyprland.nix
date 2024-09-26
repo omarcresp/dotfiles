@@ -65,6 +65,18 @@
   programs.nnn = {
     enable = true;
     package = pkgs.nnn.override ({ withNerdIcons = true; });
+    plugins = {
+      src = "${pkgs.nnn}/share/plugins";
+      mappings = {
+        p = "preview-tui";
+        f = "finder";
+        # o = "fzopen";
+        # v = "imgview";
+      };
+    };
+    extraPackages = with pkgs; [
+      ffmpegthumbnailer # for video previews
+    ];
   };
 
   programs.waybar = {
