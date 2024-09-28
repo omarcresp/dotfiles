@@ -3,7 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { pkgs, ... }:
-
+let
+  user = "jackcres";
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -14,7 +16,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos-jack"; # Define your hostname.
+  networking.hostName = "nixos-${user}"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -99,7 +101,7 @@
   # };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jackcres = {
+  users.users.${user} = {
     isNormalUser = true;
     description = "Omar Crespo";
     extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" ];
@@ -110,7 +112,7 @@
 
   # Enable automatic login for the user.
   # services.displayManager.autoLogin.enable = true;
-  services.getty.autologinUser = "jackcres";
+  services.getty.autologinUser = user;
   environment.loginShellInit = ''
     if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
       exec Hyprland
@@ -153,7 +155,11 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
-  environment.variables = { EDITOR = "vim"; };
+  environment.variables = {
+    EDITOR = "vim";
+    LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
+    NNN_FIFO = "/tmp/nnn.fifo";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

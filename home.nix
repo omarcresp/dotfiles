@@ -91,7 +91,6 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles/";
-    NNN_FIFO = "/tmp/nnn.fifo";
   };
 
   programs.fish.enable = true;
