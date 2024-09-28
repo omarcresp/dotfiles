@@ -9,7 +9,7 @@
         "HDMI-A-1, 1920x1080@74.97, auto-left, 1"
       ];
       "exec-once" = [
-        "waybar"
+        "waybar &"
       ];
       "$mainMod" = "SUPER";
       bind = [
@@ -82,35 +82,177 @@
   programs.waybar = {
     enable = true;
     style = ''
-      window#waybar {
-        background: transparent;
+      * {
         border: none;
-        color: white;
-        margin: 16px;
+        font-family: "JetBrainsMono", "Font Awesome 6 Pro";
+        font-size: 12px;
+        font-weight: 600;
+        background: none;
+      }
+
+      window#waybar {
+        color: #a5adcb;
+      }
+
+      .modules-left,
+      .modules-right {
+        border-radius: 6px;
+        background: #181926;
+        padding: 0 8px;
+      }
+
+      #custom-sep {
+        color: #494d64;
+        margin: 0 4px;
+      }
+
+      #workspaces {
+        border-radius: 4px;
+        padding-left: 4px;
+      }
+
+      #workspaces button {
+        color: #5b6078;
+        background: none;
+        padding: 0;
+        margin-right: 8px;
+      }
+
+      #workspaces button:hover {
+        color: #a6da95;
+      }
+
+      #workspaces button.active {
+        color: #f5bde6;
+      }
+
+      #temperature {
+        color: #eed49f;
+      }
+
+      #clock {
+        font-weight: 600;
+        color: #7aa2f7;
+      }
+
+      #pulseaudio {
+        color: #a6da95;
+      }
+
+      #pulseaudio.muted {
+        color: #ed8796;
+      }
+
+      #pulseaudio #icon {
+        margin-right: 4px;
       }
     '';
     settings = {
       mainBar = {
         layer = "top";
         position = "top";
-        height = 30;
+        height = 24;
+        margin = "8 8 0 8";
+        spacing = 2;
         # output = [
         #   "HDMI-A-1"
         # ];
-        modules-left = [ "group/group-power" ];
-        modules-center = [ "hyprland/window" ];
-        modules-right = [ "battery" "clock" ];
+
+        # TODO: wifi bluetooth tray
+        modules-left = [ "group/group-power" "hyprland/workspaces" ];
+        modules-center = [ "clock" ];
+        modules-right = [
+          "temperature"
+          "custom/sep"
+          # "custom/bluetooth_devices"
+          "bluetooth"
+          "tray"
+          "custom/sep"
+          "network"
+          "pulseaudio"
+          "backlight"
+          "battery"
+        ];
+
+        "custom/sep" = {
+          format = "|";
+        };
+
+        backlight = {
+          device = "amdgpu_bl1";
+          format = " {icon}  {percent}%";
+          format-icons = ["" "" "" "" "" "" "" "" ""];
+          on-scroll-up = "light -A 5";
+          on-scroll-down = "light -U 5";
+        };
+
+        clock = {
+          format = "{:%d.%m.%Y | %H:%M}";
+        };
 
         "hyprland/workspaces" = {
-          disable-scroll = true;
-          all-outputs = true;
+          format = "{icon}";
+          on-click = "activate";
+          on-scroll-up = "hyprctl dispatch workspace e-1";
+          on-scroll-down = "hyprctl dispatch workspace e+1";
+          format-icons = {
+            active = "";
+            urgent = "";
+            default = "";
+          };
         };
+
+        tray = {
+          icon-size = 18;
+          show-passive-items = "true";
+        };
+
+        pulseaudio = {
+          format = " {icon}   {volume}%";
+          format-bluetooth = "{icon}   {volume}%";
+          format-muted = "MUTE ";
+          format-icons = {
+            headphones = "";
+            handsfree = "󰂑";
+            headset = "󰋎";
+            phone = "";
+            portable = "";
+            car = "";
+            default = [ "" "" ];
+          };
+          scroll-step = 3;
+          on-click = "pavucontrol";
+          # TODO: Mute button pending to review
+          # "on-click-right" = "pactl set-source-mute @DEFAULT_SOURCE@ toggle";
+        };
+        battery = {
+          states = {
+              complete = 100;
+              mid = 99;
+              warning = 30;
+              critical = 15;
+          };
+          interval = 10;
+          format = " {icon}  {capacity}%";
+          format-full = " 󰚥  {capacity}%";
+          format-complete = " 󰁹  {capacity}%";
+          format-charging = " {icon}󱐋  {capacity}%";
+          format-icons = ["󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂"];
+        };
+
+        # modules-left = [ "group/group-power" ];
+        # modules-center = [ "clock" ];
+        # modules-right = [ "battery" ];
+
+        # "hyprland/workspaces" = {
+        #   disable-scroll = true;
+        #   all-outputs = true;
+        # };
 
         "group/group-power" = {
           "orientation" = "horizontal";
           "drawer" = {
             "transition-duration" = 500;
-            "children-class" = "not-power";
             "transition-left-to-right" = true;
           };
           "modules" = [
@@ -120,17 +262,17 @@
           ];
         };
         "custom/quit" = {
-          "format" = "󰗼";
+          "format" = " 󰗼 ";
           "tooltip" = false;
           "on-click" = "hyprctl dispatch exit";
         };
         "custom/reboot" = {
-          "format" = "󰜉";
+          "format" = " 󰜉";
           "tooltip" = false;
           "on-click" = "reboot";
         };
         "custom/power" = {
-          "format" = "";
+          "format" = " ";
           "tooltip" = false;
           "on-click" = "shutdown now";
         };

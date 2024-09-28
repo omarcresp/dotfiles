@@ -42,19 +42,12 @@
     LC_TIME = "es_CO.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-  # Enable the Budgie Desktop environment.
-  # services.xserver.displayManager.lightdm.enable = true;
-  # services.xserver.desktopManager.budgie.enable = true;
   programs.hyprland.enable = true;
 
-  # Configure keymap in X11
-  # services.xserver.xkb = {
-  #   layout = "latam";
-  #   variant = "";
-  # };
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="${pkgs.coreutils}/bin/chgrp video /sys/devices/pci0000:00/0000:00:08.1/0000:04:00.0/drm/card1/card1-eDP-1/amdgpu_bl1/brightness"
+    ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="${pkgs.coreutils}/bin/chmod 664 /sys/devices/pci0000:00/0000:00:08.1/0000:04:00.0/drm/card1/card1-eDP-1/amdgpu_bl1/brightness"
+  '';
 
   # Configure console keymap
   console.keyMap = "la-latin1";
@@ -109,7 +102,7 @@
   users.users.jackcres = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" ];
   };
 
   programs.fish.enable = true;
