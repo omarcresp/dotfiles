@@ -11,6 +11,9 @@
     zen-browser.url = "github:omarcresp/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
+    zig.url = "github:mitchellh/zig-overlay";
+    zig.inputs.nixpkgs.follows = "nixpkgs";
+
     ulauncher.url = "github:Ulauncher/Ulauncher/v6";
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -21,12 +24,21 @@
     hlib = home-manager.lib;
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    user = "jackcres";
   in
     {
       nixosConfigurations = {
-        nixos-jack = lib.nixosSystem {
+        nixos-jackcres = lib.nixosSystem {
           inherit system;
-          modules = [ ./configuration.nix ];
+          modules = [
+            ./configuration.nix
+            home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.jackcres = ./home.nix;
+              home-manager.extraSpecialArgs = { inherit inputs; };
+            }
+          ];
         };
       };
 

@@ -80,13 +80,87 @@ in
   services.kanata.enable = true;
   services.kanata.keyboards.latam.config = ''
     (defsrc
-      caps esc lctl ')
+      [ caps esc lctl f j ; ' )
 
-    (deflayermap (default-layer)
+    (defalias low (layer-while-held lower))
+    (defalias raise (layer-while-held higher))
+
+    (deflayermap (base-layer)
+      esc XX
+      ret XX
+      bspc XX
+
+      [ bspc
       caps (tap-hold 50 120 esc lctl)
-      esc caps
-      lctl XX
-      ' (tap-hold 50 150 ' lctl)
+      lctl caps
+      f (tap-hold 200 250 f lalt)
+      j (tap-hold 200 250 j lalt)
+      k (tap-hold 200 250 k k)
+      ; S-Period
+      ' (tap-hold 100 150 ret lctl)
+      IntlBackslash lsft
+      lalt @low
+      ralt @raise
+    )
+
+    (deflayermap (lower)
+      tab RA-}
+      q S-=
+      w -
+      e RA-Backslash
+      r [
+      u RA-Minus
+      i grv
+      o ]
+      p Backslash
+      [ del
+
+      a S-1
+      s S-2
+      d S-3
+      f S-4
+      g S-5
+      h S-6
+      j S-7
+      k S-8
+      l S-9
+      ; S-0
+      ' '
+
+      lsft IntlBackslash
+      IntlBackslash IntlBackslash
+      v RA-'
+      n S-Minus
+      m Equal
+      . S-]
+      / S-/
+    )
+
+    (deflayermap (higher)
+      a 0
+      x 1
+      c 2
+      v 3
+      s 4
+      d 5
+      f 6
+      w 7
+      e 8
+      r 9
+      q RA-q
+
+      h ArrowLeft
+      j ArrowDown
+      k ArrowUp
+      l ArrowRight
+
+      ; S-,
+      ' S-'
+      p S-Backslash
+      n ;
+
+      lsft S-IntlBackslash
+      IntlBackslash S-IntlBackslash
     )
   '';
 
@@ -109,6 +183,23 @@ in
 
   programs.fish.enable = true;
   users.defaultUserShell = pkgs.fish;
+
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = [ user ];
+  };
+
+  programs.wshowkeys.enable = true;
+
+  environment.etc = {
+    "1password/custom_allowed_browsers" = {
+      text = ''
+        .zen-wrapped
+      '';
+      mode = "0755";
+    };
+  };
 
   # Enable automatic login for the user.
   # services.displayManager.autoLogin.enable = true;
@@ -157,7 +248,7 @@ in
 
   environment.variables = {
     EDITOR = "vim";
-    LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
+    # LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
     NNN_FIFO = "/tmp/nnn.fifo";
   };
 

@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ config, pkgs, inputs, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -23,21 +23,32 @@
     rustc
     silicon
 
+    go
+    air
+    delve
+
     btop
     fastfetch
     fzf
+    jq
     lazygit
     tokei
     ripgrep
+    dust
     logiops
 
     nodejs_20
     bun
     yarn
+    biome
 
+    insomnia
     code-cursor
     webcord
     obs-studio
+    wayshot
+    gifski
+    ffmpeg
 
     rofi
     bluez
@@ -45,13 +56,16 @@
     pavucontrol
     pulseaudioFull
     light
+    wl-clipboard-rs
 
     # Install only the JetBrainsMono nerdfont
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
   ] ++ [
-    inputs.zen-browser.packages."${pkgs.system}".default
-    inputs.ulauncher.packages."${pkgs.system}".default
-  ];
+      inputs.zen-browser.packages."${pkgs.system}".default
+      inputs.ulauncher.packages."${pkgs.system}".default
+
+      inputs.zig.packages."${pkgs.system}".master
+    ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -93,6 +107,13 @@
     JN_DOTFILES = "$HOME/.config/dotfiles/";
   };
 
+  home.pointerCursor = {
+    name = "phinger-cursors-dark";
+    package = pkgs.phinger-cursors;
+    size = 24;
+    gtk.enable = true;
+  };
+
   programs.fish.enable = true;
   programs.fish.shellAliases = {
     jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
@@ -100,6 +121,8 @@
     jn-update = "nix flake update $JN_DOTFILES";
 
     tm = "sh $HOME/.config/tmux/tmux.sh";
+
+    jetzig = "$HOME/Downloads/jetzig/bin/jetzig";
 
     # ssh management
     s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
@@ -154,6 +177,7 @@
             set -g @tokyo-night-tmux_show_battery_widget 0
             set -g @tokyo-night-tmux_show_path 1
 
+            set -g @tokyo-night-tmux_window_id_style none
             set -g @tokyo-night-tmux_window_id_style none
           '';
         }
@@ -224,4 +248,9 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  imports = [ ./hyprland.nix ];
+
+  # Import the Zen backup and sync configuration
+  # imports = [ ./zen-backup-sync.nix ];
 }
