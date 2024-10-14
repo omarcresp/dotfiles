@@ -178,7 +178,12 @@ in
   users.users.${user} = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" ];
+  };
+
+  virtualisation.docker = {
+    enable = true;
+    enableOnBoot = true;
   };
 
   programs.fish.enable = true;
@@ -230,6 +235,7 @@ in
     unzip
     kanata
     citrix_workspace
+    docker-compose
 
     # Wayland
     libsForQt5.qt5.qtwayland
