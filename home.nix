@@ -41,6 +41,9 @@
     bun
     yarn
     biome
+    deno
+    sqlc
+    flyway
 
     insomnia
     code-cursor

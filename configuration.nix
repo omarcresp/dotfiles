@@ -234,7 +234,7 @@ in
     zip
     unzip
     kanata
-    citrix_workspace
+    # citrix_workspace
     docker-compose
 
     # Wayland

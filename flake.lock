@@ -58,11 +58,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1728726232,
-        "narHash": "sha256-8ZWr1HpciQsrFjvPMvZl0W+b0dilZOqXPoKa2Ux36bc=",
+        "lastModified": 1728903686,
+        "narHash": "sha256-ZHFrGNWDDriZ4m8CA/5kDa250SG1LiiLPApv1p/JF0o=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "d57112db877f07387ce7104b5ac346ede556d2d7",
+        "rev": "e1aec543f5caf643ca0d94b6a633101942fd065f",
         "type": "github"
       },
       "original": {
@@ -74,16 +74,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1728538411,
-        "narHash": "sha256-f0SBJz1eZ2yOuKUr5CA9BHULGXVSn6miBuUWdTyhUhU=",
+        "lastModified": 1728956102,
+        "narHash": "sha256-J8zo+UYNjHATsxn2/ROl8iaji2RgLm+sG7b3VcD36YM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b69de56fac8c2b6f8fd27f2eca01dcda8e0a4221",
+        "rev": "3d85bae2431f20ab1ac5cf14d03d314dffe629af",
         "type": "github"
       },
       "original": {
         "id": "nixpkgs",
-        "ref": "nixpkgs-unstable",
+        "ref": "master",
         "type": "indirect"
       }
     },
@@ -137,11 +137,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1726926294,
-        "narHash": "sha256-fklmeUnqT07OwLIj6yo05/xob9EHsW8B8J3YECRaRR8=",
+        "lastModified": 1728929577,
+        "narHash": "sha256-R5FnaOL/vtCGWiVX4taf6vz1eyZys6FwgN0BVgs3Q84=",
         "owner": "Ulauncher",
         "repo": "Ulauncher",
-        "rev": "56d15e0391cf2e685d9981738304e7cdf81a425a",
+        "rev": "8b19a6094bad5f2b6a424a062f8fc6b903095ca3",
         "type": "github"
       },
       "original": {
@@ -158,11 +158,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1728598479,
-        "narHash": "sha256-J1atP85+i2guPgLbwy2Y3G3lon/YUzPTbDOlsw5F+EU=",
+        "lastModified": 1728954405,
+        "narHash": "sha256-ClTOI4xfNX22FYfTLsDamZKnG1aZif8HsCBnf6zH5xY=",
         "owner": "omarcresp",
         "repo": "zen-browser-flake",
-        "rev": "a63bcba2a51429b8e46c3f1934d33d7e94bfdb5b",
+        "rev": "b4a7d710904b3e04ca0ce871f33d01203f060295",
         "type": "github"
       },
       "original": {
@@ -180,11 +180,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1728606533,
-        "narHash": "sha256-ydcaiL6IHUqJSgnElZOZsbF2dMWdck0mlt8/iEPQrvg=",
+        "lastModified": 1728952174,
+        "narHash": "sha256-oXmMYt1+UadJtuQxiuwMm2cRVE0bZurEjX3NXLmXcW0=",
         "owner": "mitchellh",
         "repo": "zig-overlay",
-        "rev": "84fb32055dcf0bda2967cdd463465059af3d91d1",
+        "rev": "eafe7f1599bdc51a337fd6020cb4dd34fbc8bca1",
         "type": "github"
       },
       "original": {

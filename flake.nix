@@ -2,7 +2,7 @@
   description = "JackCres Flake Config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "nixpkgs/master";
 
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -21,10 +21,10 @@
   outputs = { nixpkgs, home-manager, ... }@inputs:
   let
     lib = nixpkgs.lib;
-    hlib = home-manager.lib;
+    # hlib = home-manager.lib;
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    user = "jackcres";
+    # pkgs = nixpkgs.legacyPackages.${system};
+    # user = "jackcres";
   in
     {
       nixosConfigurations = {
@@ -42,12 +42,12 @@
         };
       };
 
-      homeConfigurations = {
-        jackcres = hlib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./home.nix ./hyprland.nix ];
-          extraSpecialArgs = { inherit inputs; };
-        };
-      };
+      # homeConfigurations = {
+      #   jackcres = hlib.homeManagerConfiguration {
+      #     inherit pkgs;
+      #     modules = [ ./home.nix ./hyprland.nix ];
+      #     extraSpecialArgs = { inherit inputs; };
+      #   };
+      # };
     };
 }
