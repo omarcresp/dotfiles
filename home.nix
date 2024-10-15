@@ -47,7 +47,7 @@
 
     insomnia
     code-cursor
-    webcord
+    vesktop
     obs-studio
     wayshot
     gifski

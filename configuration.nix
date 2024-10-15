@@ -234,8 +234,9 @@ in
     zip
     unzip
     kanata
-    # citrix_workspace
+    citrix_workspace
     docker-compose
+    vesktop
 
     # Wayland
     libsForQt5.qt5.qtwayland
