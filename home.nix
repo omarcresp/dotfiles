@@ -65,6 +65,9 @@
     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
   ] ++ [
       inputs.zen-browser.packages."${pkgs.system}".default
+
+      inputs.hcp-cli.packages."${pkgs.system}".default
+
       inputs.ulauncher.packages."${pkgs.system}".default
 
       inputs.zig.packages."${pkgs.system}".master

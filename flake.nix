@@ -12,6 +12,9 @@
     zen-browser.url = "github:omarcresp/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
+    hcp-cli.url = "github:omarcresp/hcp-cli-flake";
+    hcp-cli.inputs.nixpkgs.follows = "nixpkgs";
+
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
 
