@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/master";
+    nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -18,11 +19,18 @@
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nixpkgs-stable, ... }@inputs:
   let
     lib = nixpkgs.lib;
     # hlib = home-manager.lib;
     system = "x86_64-linux";
+    stable = nixpkgs-stable.legacyPackages.${system};
+    stableOverlay = final: prev: {
+      stable = import nixpkgs-stable {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    };
     # pkgs = nixpkgs.legacyPackages.${system};
     # user = "jackcres";
   in
@@ -31,12 +39,18 @@
         nixos-jackcres = lib.nixosSystem {
           inherit system;
           modules = [
+            ({
+              nixpkgs = {
+                overlays = [ stableOverlay ];
+                config.allowUnfree = true; # this is the only allowUnfree that's actually doing anything
+              };
+            })
             ./configuration.nix
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.jackcres = ./home.nix;
-              home-manager.extraSpecialArgs = { inherit inputs; };
+              home-manager.extraSpecialArgs = { inherit inputs stable; };
             }
           ];
         };

@@ -234,7 +234,7 @@ in
     zip
     unzip
     kanata
-    citrix_workspace
+    stable.citrix_workspace
     docker-compose
     vesktop
 
