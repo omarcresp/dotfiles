@@ -38,6 +38,8 @@
     logiops
 
     nodejs_20
+    stable.pulumi
+    stable.pulumiPackages.pulumi-language-nodejs
     bun
     yarn
     biome
@@ -120,20 +122,26 @@
     gtk.enable = true;
   };
 
-  programs.fish.enable = true;
-  programs.fish.shellAliases = {
-    jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
-    jn-system-switch = "sudo nixos-rebuild switch --flake $JN_DOTFILES";
-    jn-update = "nix flake update $JN_DOTFILES";
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = ''
+      set fish_greeting # Disable greeting
+      fish_vi_key_bindings
+    '';
+    shellAliases = {
+      jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
+      jn-system-switch = "sudo nixos-rebuild switch --flake $JN_DOTFILES";
+      jn-update = "nix flake update $JN_DOTFILES";
 
-    tm = "sh $HOME/.config/tmux/tmux.sh";
+      tm = "sh $HOME/.config/tmux/tmux.sh";
 
-    jetzig = "$HOME/Downloads/jetzig/bin/jetzig";
+      jetzig = "$HOME/Downloads/jetzig/bin/jetzig";
 
-    # ssh management
-    s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
-    s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
-    s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
+      # ssh management
+      s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
+      s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
+      s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
+    };
   };
   programs.starship = {
     enable = true;
