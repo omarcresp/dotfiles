@@ -263,7 +263,7 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  imports = [ ./hyprland.nix ];
+  imports = [ ./hyprland.nix ./minecraft.nix ];
 
   # Import the Zen backup and sync configuration
   # imports = [ ./zen-backup-sync.nix ];
