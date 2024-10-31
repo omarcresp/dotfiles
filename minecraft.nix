@@ -1,7 +1,8 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    atlauncher
-    temurin-jre-bin
+    prismlauncher
+    temurin-bin-21
+    unrar
   ];
 }
