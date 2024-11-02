@@ -38,8 +38,6 @@
     logiops
 
     nodejs_20
-    stable.pulumi
-    stable.pulumiPackages.pulumi-language-nodejs
     bun
     yarn
     biome
@@ -73,6 +71,9 @@
       inputs.ulauncher.packages."${pkgs.system}".default
 
       inputs.zig.packages."${pkgs.system}".master
+
+      stable.pulumi
+      stable.pulumiPackages.pulumi-language-nodejs
     ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

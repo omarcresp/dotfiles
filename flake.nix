@@ -2,7 +2,7 @@
   description = "JackCres Flake Config";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/master";
+    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "nixpkgs/nixos-24.05";
 
     home-manager.url = "github:nix-community/home-manager/master";
@@ -13,7 +13,8 @@
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     hcp-cli.url = "github:omarcresp/hcp-cli-flake";
-    hcp-cli.inputs.nixpkgs.follows = "nixpkgs";
+
+    pulumi-overlay.url = "github:saiintbrisson/nixpkgs";
 
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
@@ -22,12 +23,19 @@
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, nixpkgs-stable, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nixpkgs-stable, pulumi-overlay, ... }@inputs:
   let
     lib = nixpkgs.lib;
     # hlib = home-manager.lib;
     system = "x86_64-linux";
     stable = nixpkgs-stable.legacyPackages.${system};
+    pulumi = pulumi-overlay.legacyPackages.${system};
+    pulumiOverlay = final: prev: {
+      pulumi = import pulumi-overlay {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    };
     stableOverlay = final: prev: {
       stable = import nixpkgs-stable {
         inherit system;
@@ -44,8 +52,8 @@
           modules = [
             ({
               nixpkgs = {
-                overlays = [ stableOverlay ];
-                config.allowUnfree = true; # this is the only allowUnfree that's actually doing anything
+                overlays = [ stableOverlay pulumiOverlay ];
+                config.allowUnfree = true;
               };
             })
             ./configuration.nix
@@ -53,7 +61,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.jackcres = ./home.nix;
-              home-manager.extraSpecialArgs = { inherit inputs stable; };
+              home-manager.extraSpecialArgs = { inherit inputs stable pulumi; };
             }
           ];
         };
