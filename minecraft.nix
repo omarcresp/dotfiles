@@ -6,5 +6,6 @@
 
     unrar
     mgba
+    dualsensectl
   ];
 }
