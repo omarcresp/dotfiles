@@ -14,8 +14,6 @@
 
     hcp-cli.url = "github:omarcresp/hcp-cli-flake";
 
-    pulumi-overlay.url = "github:saiintbrisson/nixpkgs";
-
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -23,19 +21,12 @@
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, nixpkgs-stable, pulumi-overlay, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nixpkgs-stable, ... }@inputs:
   let
     lib = nixpkgs.lib;
     # hlib = home-manager.lib;
     system = "x86_64-linux";
     stable = nixpkgs-stable.legacyPackages.${system};
-    pulumi = pulumi-overlay.legacyPackages.${system};
-    pulumiOverlay = final: prev: {
-      pulumi = import pulumi-overlay {
-        inherit system;
-        config.allowUnfree = true;
-      };
-    };
     stableOverlay = final: prev: {
       stable = import nixpkgs-stable {
         inherit system;
@@ -52,7 +43,7 @@
           modules = [
             ({
               nixpkgs = {
-                overlays = [ stableOverlay pulumiOverlay ];
+                overlays = [ stableOverlay ];
                 config.allowUnfree = true;
               };
             })
@@ -61,7 +52,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.jackcres = ./home.nix;
-              home-manager.extraSpecialArgs = { inherit inputs stable pulumi; };
+              home-manager.extraSpecialArgs = { inherit inputs stable; };
             }
           ];
         };

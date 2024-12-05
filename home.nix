@@ -28,6 +28,17 @@
     go
     air
     delve
+    exercism
+
+    clang
+    cmake
+    flutter
+    ninja
+    pkg-config
+
+    vlc
+    nautilus
+    libsForQt5.kdenlive
 
     btop
     fastfetch
@@ -63,14 +74,13 @@
     light
     wl-clipboard-rs
 
-    # Install only the JetBrainsMono nerdfont
-    (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    nerd-fonts.jetbrains-mono
   ] ++ [
       inputs.zen-browser.packages."${pkgs.system}".default
 
       inputs.hcp-cli.packages."${pkgs.system}".default
 
-      inputs.ulauncher.packages."${pkgs.system}".default
+      # inputs.ulauncher.packages."${pkgs.system}".default
 
       inputs.zig.packages."${pkgs.system}".master
 
@@ -147,6 +157,7 @@
       s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
     };
   };
+
   programs.starship = {
     enable = true;
     enableTransience = true;

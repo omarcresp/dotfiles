@@ -25,8 +25,6 @@
 
         "$mainMod, b, exec, swaync-client -t"
 
-        "$mainMod, M, exit"
-
         "$mainMod, Tab, focusmonitor, +1"
         "$mainMod, Space, exec, ulauncher-toggle"
 

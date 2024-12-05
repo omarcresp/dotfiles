@@ -178,7 +178,7 @@ in
   users.users.${user} = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" ];
   };
 
   virtualisation.docker = {
@@ -186,6 +186,7 @@ in
     enableOnBoot = true;
   };
 
+  programs.adb.enable = true;
   programs.fish.enable = true;
   users.defaultUserShell = pkgs.fish;
 
