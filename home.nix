@@ -145,7 +145,7 @@
     shellAliases = {
       jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
       jn-system-switch = "sudo nixos-rebuild switch --flake $JN_DOTFILES";
-      jn-update = "nix flake update $JN_DOTFILES";
+      jn-update = "nix flake update --flake $JN_DOTFILES";
 
       tm = "sh $HOME/.config/tmux/tmux.sh";
 
