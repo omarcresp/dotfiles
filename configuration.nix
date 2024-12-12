@@ -198,6 +198,12 @@ in
 
   programs.wshowkeys.enable = true;
 
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+  };
+
   environment.etc = {
     "1password/custom_allowed_browsers" = {
       text = ''
