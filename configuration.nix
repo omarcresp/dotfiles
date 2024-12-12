@@ -5,6 +5,7 @@
 { pkgs, ... }:
 let
   user = "jackcres";
+  androidSdk = pkgs.androidenv.androidPkgs.androidsdk;
 in
 {
   imports =
@@ -231,6 +232,7 @@ in
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.android_sdk.accept_license = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -250,6 +252,7 @@ in
     # libsForQt6.qt6.qtwayland
     libnotify
     swww
+    # androidSdk
   ];
 
   # TODO: Research about desktop portals and alternativies
@@ -264,6 +267,7 @@ in
     EDITOR = "vim";
     # LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}";
     NNN_FIFO = "/tmp/nnn.fifo";
+    # ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
   };
 
   # Some programs need SUID wrappers, can be configured further or are
