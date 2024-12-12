@@ -58,6 +58,8 @@
     sqlc
     flyway
 
+    godot_4
+
     insomnia
     code-cursor
     vesktop
