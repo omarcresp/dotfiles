@@ -17,7 +17,7 @@
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
 
-    ulauncher.url = "github:Ulauncher/Ulauncher/v6";
+    ulauncher.url = "github:omarcresp/Ulauncher/v6";
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
   };
 
