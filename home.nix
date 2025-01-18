@@ -30,6 +30,9 @@
     delve
     exercism
 
+    ocamlPackages.findlib
+    ocamlPackages.batteries
+
     clang
     cmake
     flutter
@@ -48,24 +51,24 @@
     tokei
     ripgrep
     dust
-    logiops
+    # logiops
 
     nodejs_20
     bun
     yarn
     biome
     deno
-    sqlc
-    flyway
+    # sqlc
+    # flyway
 
     godot_4
 
-    insomnia
-    code-cursor
+    # insomnia
+    # code-cursor
     vesktop
     obs-studio
     wayshot
-    gifski
+    # gifski
     ffmpeg
 
     rofi
@@ -157,6 +160,8 @@
       s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
       s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
       s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
+
+      sve = "SMAPI_MODS_PATH=Mods2 steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
     };
   };
 
@@ -182,13 +187,21 @@
   fonts.fontconfig.enable = true;
 
   # Enable programs
-  programs.git.enable = true;
+  # programs.git.enable = true;
+  programs.git = {
+    enable = true;
+    extraConfig = {
+      push = { autoSetupRemote = true; };
+    };
+  };
   programs.neovim.enable = true;
   programs.zoxide = {
     enable = true;
     enableBashIntegration= true;
     options = [ "--cmd cd" ];
   };
+
+  programs.opam.enable = true;
 
   # Tmux conf
   programs.tmux = {
