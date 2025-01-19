@@ -19,6 +19,8 @@
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
+    ghostty
+
     cargo
     rustc
     silicon
@@ -131,7 +133,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles/";
-    PKG_CONFIG_PATH = "/nix/store/r7flal4p7ssbz48s9m5w848phzpfw1iv-openssl-3.3.2-dev/lib/pkgconfig";
+    ANTHROPIC_API_KEY = "";
   };
 
   home.pointerCursor = {
