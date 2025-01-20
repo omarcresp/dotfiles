@@ -32,9 +32,6 @@
     delve
     exercism
 
-    ocamlPackages.findlib
-    ocamlPackages.batteries
-
     clang
     cmake
     flutter
@@ -85,7 +82,7 @@
   ] ++ [
       inputs.zen-browser.packages."${pkgs.system}".default
 
-      inputs.hcp-cli.packages."${pkgs.system}".default
+      # inputs.hcp-cli.packages."${pkgs.system}".default
 
       inputs.ulauncher.packages."${pkgs.system}".default
 
@@ -159,11 +156,10 @@
       jetzig = "$HOME/Downloads/jetzig/bin/jetzig";
 
       # ssh management
-      s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-vammo ~/.ssh";
+      s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-work ~/.ssh";
       s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
-      s-fer = "rm -rf ~/.ssh && ln -s ~/.ssh-fer ~/.ssh";
 
-      sve = "SMAPI_MODS_PATH=Mods2 steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
+      sve = "steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
     };
   };
 
@@ -202,8 +198,6 @@
     enableBashIntegration= true;
     options = [ "--cmd cd" ];
   };
-
-  programs.opam.enable = true;
 
   # Tmux conf
   programs.tmux = {
