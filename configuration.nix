@@ -224,11 +224,11 @@ in
   '';
 
   # Install firefox.
-  # programs.firefox = {
-  #   enable = true;
-  #   package = pkgs.firefox;
-  #   nativeMessagingHosts.packages = [ pkgs.firefoxpwa ];
-  # };
+  programs.firefox = {
+    enable = true;
+    package = pkgs.firefox;
+    nativeMessagingHosts.packages = [ pkgs.firefoxpwa ];
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -243,9 +243,10 @@ in
     zip
     unzip
     kanata
-    stable.citrix_workspace
+    citrix_workspace
     docker-compose
     vesktop
+    firefoxpwa
 
     # Wayland
     libsForQt5.qt5.qtwayland
