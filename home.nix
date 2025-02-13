@@ -20,6 +20,8 @@
   # environment.
   home.packages = with pkgs; [
     ghostty
+    zenity
+    unrar
 
     cargo
     rustc
@@ -38,6 +40,9 @@
     ninja
     pkg-config
 
+    # Nia
+    anydesk
+
     vlc
     nautilus
     libsForQt5.kdenlive
@@ -47,8 +52,8 @@
     fzf
     jq
     lazygit
+    lazydocker
     tokei
-    ripgrep
     dust
     # logiops
 
@@ -168,6 +173,14 @@
     enableTransience = true;
     enableBashIntegration = false;
   };
+
+  programs.ripgrep = {
+    enable = true;
+    arguments = [
+      "--smart-case"
+    ];
+  };
+
 
   programs.kitty = {
     enable = true;

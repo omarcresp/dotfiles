@@ -27,6 +27,7 @@
 
         "$mainMod, Tab, focusmonitor, +1"
         "$mainMod, Space, exec, ulauncher-toggle"
+        "$mainMod, o, exec, hyprctl dispatch pin active"
 
         "$mainMod, a, workspace, 1"
         "$mainMod, s, workspace, 2"
@@ -50,22 +51,21 @@
         #   "$mainMod, J, movetoworkspace, 7"
         #   "$mainMod, K, movetoworkspace, 8"
         #   "$mainMod, L, movetoworkspace, 9"
-        "$mainMod, !, movetoworkspace, 1"
+        # "$mainMod, !, movetoworkspace, 1"
         # ''$mainMod, ", movetoworkspace, 2''
         # "$mainMod, \\#, movetoworkspace, 3"
-        "$mainMod, $, movetoworkspace, 4"
-        "$mainMod, %, movetoworkspace, 5"
-        "$mainMod, &, movetoworkspace, 6"
-        "$mainMod, /, movetoworkspace, 7"
-        "$mainMod, (, movetoworkspace, 8"
-        "$mainMod, ), movetoworkspace, 9"
+        # "$mainMod, $, movetoworkspace, 4"
+        # "$mainMod, %, movetoworkspace, 5"
+        # "$mainMod, &, movetoworkspace, 6"
+        # "$mainMod, /, movetoworkspace, 7"
+        # "$mainMod, (, movetoworkspace, 8"
+        # "$mainMod, ), movetoworkspace, 9"
       ] ++ (
         # workspaces
         # binds $mod + [shift +] {a,s,d..l} to [move to] workspace {1..9}
         builtins.concatLists (builtins.genList (i:
             let ws = i + 1;
             in [
-              "$mainMod, code:1${toString i}, workspace, ${toString ws}"
               "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
             ]
           )
