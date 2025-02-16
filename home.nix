@@ -37,6 +37,7 @@
     clang
     cmake
     flutter
+    firebase-tools
     ninja
     pkg-config
 
@@ -132,12 +133,6 @@
   #
   #  /etc/profiles/per-user/jackcres/etc/profile.d/hm-session-vars.sh
 
-  home.sessionVariables = {
-    EDITOR = "nvim";
-    JN_DOTFILES = "$HOME/.config/dotfiles/";
-    ANTHROPIC_API_KEY = "";
-  };
-
   home.pointerCursor = {
     name = "phinger-cursors-dark";
     package = pkgs.phinger-cursors;
@@ -164,7 +159,8 @@
       s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-work ~/.ssh";
       s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
 
-      sve = "steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
+      sve = "SMAPI_MODS_PATH=Mods2 steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
+      svnia = "steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
     };
   };
 
@@ -190,6 +186,7 @@
     };
     settings = {
       allow_remote_control = "yes";
+      # background_opacity = "0.9";
     };
     themeFile = "tokyo_night_night";
   };
@@ -302,7 +299,7 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  imports = [ ./hyprland.nix ./minecraft.nix ];
+  imports = [ ./hyprland.nix ./minecraft.nix ./secrets.nix ];
 
   # Import the Zen backup and sync configuration
   # imports = [ ./zen-backup-sync.nix ];
