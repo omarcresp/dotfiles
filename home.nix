@@ -1,25 +1,10 @@
-{ pkgs, inputs, ... }:
+{ pkgs, inputs, zelda64, ... }:
 {
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
   home.username = "jackcres";
   home.homeDirectory = "/home/jackcres";
+  home.stateVersion = "24.05";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "24.05"; # Please read the comment before changing.
-
-  nixpkgs.config.allowUnfree = true;
-
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
   home.packages = with pkgs; [
-    ghostty
     zenity
     unrar
 
@@ -36,10 +21,9 @@
 
     clang
     cmake
-    flutter
-    firebase-tools
-    ninja
-    pkg-config
+    # flutter
+    # ninja
+    # pkg-config
 
     # Nia
     anydesk
@@ -52,16 +36,17 @@
     fastfetch
     fzf
     jq
-    lazygit
     lazydocker
     tokei
+    cloc
+    scc
     dust
     # logiops
 
     nodejs_20
-    bun
-    yarn
-    biome
+    # bun
+    # yarn
+    # biome
     deno
     # sqlc
     # flyway
@@ -96,6 +81,10 @@
 
       stable.pulumi
       stable.pulumiPackages.pulumi-language-nodejs
+
+      zelda64
+
+      inputs.jack-nixvim.packages.${pkgs.system}.default
     ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -117,22 +106,6 @@
     # '';
   };
 
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. These will be explicitly sourced when using a
-  # shell provided by Home Manager. If you don't want to manage your shell
-  # through Home Manager then you have to manually source 'hm-session-vars.sh'
-  # located at either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/jackcres/etc/profile.d/hm-session-vars.sh
-
   home.pointerCursor = {
     name = "phinger-cursors-dark";
     package = pkgs.phinger-cursors;
@@ -140,29 +113,6 @@
     gtk.enable = true;
   };
 
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      set fish_greeting # Disable greeting
-      fish_vi_key_bindings
-    '';
-    shellAliases = {
-      jn-home-switch = "home-manager switch --flake $JN_DOTFILES";
-      jn-system-switch = "sudo nixos-rebuild switch --flake $JN_DOTFILES";
-      jn-update = "nix flake update --flake $JN_DOTFILES";
-
-      tm = "sh $HOME/.config/tmux/tmux.sh";
-
-      jetzig = "$HOME/Downloads/jetzig/bin/jetzig";
-
-      # ssh management
-      s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-work ~/.ssh";
-      s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
-
-      sve = "SMAPI_MODS_PATH=Mods2 steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
-      svnia = "steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
-    };
-  };
 
   programs.starship = {
     enable = true;
@@ -199,14 +149,9 @@
   programs.git = {
     enable = true;
     extraConfig = {
-      push = { autoSetupRemote = true; };
+      push.autoSetupRemote = true;
+      init.defaultBranch = "main";
     };
-  };
-  programs.neovim.enable = true;
-  programs.zoxide = {
-    enable = true;
-    enableBashIntegration= true;
-    options = [ "--cmd cd" ];
   };
 
   # Tmux conf
@@ -233,11 +178,6 @@
         }
       ];
     extraConfig = ''
-      set -g terminal-overrides "xterm-256color"
-      set -ga terminal-overrides ",xterm-256color:Tc"
-      set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm'
-      set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d::%p1%{255}%&%d%;m'
-
       set -s escape-time 0
 
       set -g mouse on
@@ -261,8 +201,8 @@
       # Fzf key bindings
       unbind p
       unbind P
-      bind p display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && SESSION_WIZARD_CMD="nvim" $HOME/.config/tmux/session-wizard.sh'
-      bind P display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && $HOME/.config/tmux/session-wizard.sh'
+      bind P display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && SESSION_WIZARD_CMD="nvim" $HOME/.config/tmux/session-wizard.sh'
+      bind p display-popup -w 80% -h 40% -E '$HOME/.config/tmux/z_registry.sh && $HOME/.config/tmux/session-wizard.sh'
 
       # Set status bar to top
       set -g status-position top
@@ -293,14 +233,13 @@
       # Close with x not ask for confirmation
       unbind x
       bind x run-shell '$HOME/.config/tmux/tmux-killer.sh pane'
+
+      set -g detach-on-destroy off
     '';
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  imports = [ ./hyprland.nix ./minecraft.nix ./secrets.nix ];
-
-  # Import the Zen backup and sync configuration
-  # imports = [ ./zen-backup-sync.nix ];
+  imports = [ ./hyprland.nix ./minecraft.nix ./secrets.nix ./terminal.nix ];
 }
