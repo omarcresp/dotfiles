@@ -7,7 +7,7 @@
     settings = {
       monitor = [
         "eDP-1, 1366x768@60, 0x0, 1"
-        "HDMI-A-1, 1920x1080@74.97, auto-left, 1"
+        "HDMI-A-1, 1920x1080@60, auto-left, 1"
       ];
       cursor = {
         inactive_timeout = 3;
@@ -27,6 +27,7 @@
         "$mainMod, b, exec, swaync-client -t"
 
         "$mainMod, Tab, focusmonitor, +1"
+        "$mainMod, X, movecurrentworkspacetomonitor, +1"
         "$mainMod, Space, exec, ulauncher-toggle"
         "$mainMod, o, exec, hyprctl dispatch pin active"
 
@@ -42,25 +43,6 @@
 
         "SHIFT, Print, exec, wayshot --file ~/Pictures/shots/shot_$(date +%Y-%m-%d_%H-%M-%S).png"
         ", Print, exec, wayshot --stdout | wl-copy"
-
-        #   "$mainMod, A, movetoworkspace, 1"
-        #   "$mainMod, S, movetoworkspace, 2"
-        #   "$mainMod, D, movetoworkspace, 3"
-        #   "$mainMod, F, movetoworkspace, 4"
-        #   "$mainMod, G, movetoworkspace, 5"
-        #   "$mainMod, H, movetoworkspace, 6"
-        #   "$mainMod, J, movetoworkspace, 7"
-        #   "$mainMod, K, movetoworkspace, 8"
-        #   "$mainMod, L, movetoworkspace, 9"
-        # "$mainMod, !, movetoworkspace, 1"
-        # ''$mainMod, ", movetoworkspace, 2''
-        # "$mainMod, \\#, movetoworkspace, 3"
-        # "$mainMod, $, movetoworkspace, 4"
-        # "$mainMod, %, movetoworkspace, 5"
-        # "$mainMod, &, movetoworkspace, 6"
-        # "$mainMod, /, movetoworkspace, 7"
-        # "$mainMod, (, movetoworkspace, 8"
-        # "$mainMod, ), movetoworkspace, 9"
       ] ++ (
         # workspaces
         # binds $mod + [shift +] {a,s,d..l} to [move to] workspace {1..9}

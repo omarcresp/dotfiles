@@ -143,7 +143,12 @@ in
   users.users.${user} = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" ];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" "wireshark" ];
+  };
+
+  programs.wireshark = {
+    enable = true;
+    dumpcap.enable = true;
   };
 
   virtualisation.docker = {
@@ -151,7 +156,6 @@ in
     enableOnBoot = true;
   };
 
-  programs.adb.enable = true;
   programs.fish.enable = true;
   users.defaultUserShell = pkgs.fish;
 
@@ -167,6 +171,7 @@ in
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
+    gamescopeSession.enable = true;
   };
 
   environment.etc = {
@@ -185,12 +190,6 @@ in
     fi
   '';
 
-  programs.firefox = {
-    enable = true;
-    package = pkgs.firefox;
-    nativeMessagingHosts.packages = [ pkgs.firefoxpwa ];
-  };
-
   environment.systemPackages = with pkgs; [
     vim
     wget
@@ -198,10 +197,8 @@ in
     zip
     unzip
     kanata
-    citrix_workspace
     docker-compose
     vesktop
-    firefoxpwa
 
     # Wayland
     libsForQt5.qt5.qtwayland

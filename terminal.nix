@@ -13,29 +13,25 @@
       # TODO: create this as independant CLI (or replace with sesh)
       tm = "sh $HOME/.config/tmux/tmux.sh";
 
-      # TODO: pending to replace default nvim
-      # nixvim = "~/Programming/coding-adventure/oss/jack-nixvim/result/bin/nvim";
+      # NOTE: Development purposes
+      nixvim = "nix run /home/jackcres/Programming/coding-adventure/oss/jack-nixvim/";
 
-      # FIX: ssh management (DEPRECATED)
-      # s-work = "rm -rf ~/.ssh && ln -s ~/.ssh-work ~/.ssh";
-      # s-home = "rm -rf ~/.ssh && ln -s ~/.ssh-omar ~/.ssh";
-
-      sve = "steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
       svultra = "SMAPI_MODS_PATH=~/Downloads/ModsUltra steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
       svnia = "SMAPI_MODS_PATH=Mods2 steam-run $HOME/.local/share/Steam/steamapps/common/Stardew\\ Valley/StardewModdingAPI";
     };
   };
 
-  programs.ghostty = {
-    settings = {
-      theme = "tokyonight-moon";
-      font-size = 10;
-      keybind = [
-        "ctrl+h=goto_split:left"
-        "ctrl+l=goto_split:right"
-      ];
-    };
-  };
+  # programs.ghostty = {
+  #   enable = true;
+  #   settings = {
+  #     theme = "tokyonight";
+  #     font-size = 10;
+  #     keybind = [
+  #       "ctrl+h=goto_split:left"
+  #       "ctrl+l=goto_split:right"
+  #     ];
+  #   };
+  # };
 
   programs.zoxide = {
     enable = true;

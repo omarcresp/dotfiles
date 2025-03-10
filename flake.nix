@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    nixpkgs-stable.url = "nixpkgs/nixos-24.05";
     nixpkgs-zelda.url = "github:qubitnano/nixpkgs/pr/recomp";
 
     home-manager.url = "github:nix-community/home-manager/master";
@@ -13,7 +12,10 @@
     zen-browser.url = "github:omarcresp/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
-    hcp-cli.url = "github:omarcresp/hcp-cli-flake";
+    cursor.url = "github:omarcresp/cursor-flake";
+    cursor.inputs.nixpkgs.follows = "nixpkgs";
+
+    # hcp-cli.url = "github:omarcresp/hcp-cli-flake";
 
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
@@ -26,21 +28,14 @@
     jack-nixvim.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, nixpkgs-stable, nixpkgs-zelda, ... }@inputs:
+  outputs = { nixpkgs, home-manager, nixpkgs-zelda, ... }@inputs:
   let
     lib = nixpkgs.lib;
     # hlib = home-manager.lib;
     system = "x86_64-linux";
-    stable = nixpkgs-stable.legacyPackages.${system};
     zelda64 = import nixpkgs-zelda {
       inherit system;
       config.allowUnfree = true;
-    };
-    stableOverlay = final: prev: {
-      stable = import nixpkgs-stable {
-        inherit system;
-        config.allowUnfree = true;
-      };
     };
     # pkgs = nixpkgs.legacyPackages.${system};
     # user = "jackcres";
@@ -52,7 +47,6 @@
           modules = [
             ({
               nixpkgs = {
-                overlays = [ stableOverlay ];
                 config.allowUnfree = true;
               };
             })
@@ -60,9 +54,10 @@
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
               home-manager.users.jackcres = ./home.nix;
               home-manager.extraSpecialArgs = {
-                inherit inputs stable;
+                inherit inputs;
                 zelda64 = zelda64.zelda64recomp;
               };
             }

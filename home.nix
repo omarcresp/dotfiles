@@ -5,61 +5,54 @@
   home.stateVersion = "24.05";
 
   home.packages = with pkgs; [
-    zenity
-    unrar
-
     cargo
     rustc
     silicon
     gnumake
     openssl
+    ffmpeg
 
     go
     air
     delve
     exercism
 
+    google-chrome
+    windsurf
+
     clang
     cmake
-    # flutter
-    # ninja
-    # pkg-config
 
     # Nia
     anydesk
 
-    vlc
     nautilus
-    libsForQt5.kdenlive
 
     btop
     fastfetch
     fzf
-    jq
     lazydocker
     tokei
-    cloc
-    scc
     dust
     # logiops
 
-    nodejs_20
+    nodejs_22
     # bun
     # yarn
-    # biome
+    biome
     deno
     # sqlc
     # flyway
+    supabase-cli
 
-    godot_4
+    # godot_4
 
     # insomnia
-    # code-cursor
     vesktop
     obs-studio
     wayshot
     # gifski
-    ffmpeg
+    # ffmpeg
 
     rofi
     bluez
@@ -79,8 +72,7 @@
 
       inputs.zig.packages."${pkgs.system}".master
 
-      stable.pulumi
-      stable.pulumiPackages.pulumi-language-nodejs
+      inputs.cursor.packages."${pkgs.system}".default
 
       zelda64
 
