@@ -13,6 +13,11 @@
     JN_DOTFILES = "$HOME/.config/dotfiles";
   };
 
+  programs.git.signing.signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+  home.file = {
+    ".ssh/config".source = ../../legacy/ssh-config-macos;
+  };
+
   programs.fish = {
     enable = true;
     interactiveShellInit = ''
