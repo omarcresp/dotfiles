@@ -1,0 +1,4 @@
+Host *
+        IdentityAgent ~/.1password/agent.sock
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFY5mL5Pt4Djk2AibDNdHLvXwXmCSiX2Qze+hbhDMP/D
