@@ -40,9 +40,9 @@
   fonts.fontconfig.enable = true;
 
   imports = [
-    ../../home/hyprland.nix
-    ../../home/terminal.nix
-    ../../home/development.nix
+    ../../modules/hyprland.nix
+    ../../modules/terminal.nix
+    ../../modules/development.nix
   ];
 
   programs.home-manager.enable = true;

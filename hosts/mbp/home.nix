@@ -26,10 +26,9 @@
   '';
 
   imports = [
-    ../../home/terminal.nix
-    ../../home/development.nix
+    ../../modules/terminal.nix
+    ../../modules/development.nix
   ];
 
   programs.home-manager.enable = true;
 }
-

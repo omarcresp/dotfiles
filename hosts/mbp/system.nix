@@ -48,6 +48,7 @@
       "zen"
       "ghostty"
       "lm-studio"
+      "anydesk"
     ];
 
     # NOTE: Waiting on billing info to be update
@@ -57,5 +58,5 @@
     # };
   };
 
-  # imports = [ ../../custom/kanata-darwin.nix ];
+  imports = [ ../../modules/application.nix ];
 }

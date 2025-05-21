@@ -2,8 +2,6 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   system.stateVersion = "24.05";
 
-  imports = [ ./hardware-configuration.nix ];
-
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
@@ -103,13 +101,10 @@
   environment.systemPackages = with pkgs; [
     vim
 
-    # TODO: define if it should be at this level
-    vesktop
-    obs-studio
-    anydesk
-
     nautilus
     ghostty
+    obs-studio
+    anydesk
 
     # Wayland
     libsForQt5.qt5.qtwayland
@@ -130,4 +125,6 @@
     EDITOR = "nvim";
     NNN_FIFO = "/tmp/nnn.fifo";
   };
+
+  imports = [ ./hardware-configuration.nix ../../modules/application.nix ];
 }
