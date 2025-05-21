@@ -1,11 +1,16 @@
-{ pkgs, inputs, ...}: {
+{ pkgs, inputs, ...}: let 
+  zig-master = inputs.zig.packages."${pkgs.system}".master;
+  jnvim = inputs.jack-nixvim.packages.${pkgs.system}.default;
+in {
   home.packages = with pkgs; [
     gnumake
     clang
     cmake
 
+    insomnia
     dbeaver-bin
-    code-cursor
+    code-cursor # TODO: replace with flake. flake is missing darwin support
+    jnvim
 
     lazydocker
     lazygit
@@ -14,6 +19,7 @@
 
     rustc
     cargo
+    silicon
 
     go
     air
@@ -23,7 +29,7 @@
     biome
     deno
 
-    inputs.zig.packages."${pkgs.system}".master
+    zig-master
   ];
 
   programs.ripgrep = {

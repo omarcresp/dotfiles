@@ -1,4 +1,4 @@
-{ pkgs, inputs, user, ... }: {
+{ pkgs, user, ... }: {
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
   nix.settings.experimental-features = "nix-command flakes";
@@ -18,13 +18,18 @@
     finder.ShowPathbar = true;
   };
 
-  environment.systemPackages = with pkgs; [ vim ] ++ [
-    inputs.jack-nixvim.packages.${pkgs.system}.default
-  ];
+  environment.systemPackages = with pkgs; [ vim ];
 
-  # BUG: Karabiner Elements 14 license expired. waiting on nix-darwin support
-  # https://github.com/nix-darwin/nix-darwin/issues/1041
+  # NOTE: Kanata - Karabiner integration not working yet
   # services.karabiner-elements.enable = true;
+  # services.karabiner-elements.package = pkgs.karabiner-elements.overrideAttrs (old: {
+  #   version = "14.13.0";
+  #   src = pkgs.fetchurl {
+  #     url = old.src.url;
+  #     hash = "sha256-gmJwoht/Tfm5qMecmq1N6PSAIfWOqsvuHU8VDJY8bLw=";
+  #   };
+  #   dontFixup = true;
+  # });
 
   # TODO: define if 1password place its there
   programs._1password.enable = true;
@@ -42,7 +47,14 @@
       "docker"
       "zen"
       "ghostty"
+      "lm-studio"
     ];
+
+    # NOTE: Waiting on billing info to be update
+    # masApps = {
+    #   "Ghostery" = 6504861501;
+    #   "1PasswordSafari" = 1569813296;
+    # };
   };
 
   # imports = [ ../../custom/kanata-darwin.nix ];

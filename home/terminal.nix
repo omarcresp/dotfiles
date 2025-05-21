@@ -1,15 +1,15 @@
 { pkgs, ...}:
 {
   home.packages = with pkgs; [
+    zsh
+    wget
     btop
     fastfetch
     fzf
     dust
     nerd-fonts.jetbrains-mono
-
-    lazydocker
-    lazygit
-    tokei
+    zip
+    unzip
   ];
 
   home.file = {

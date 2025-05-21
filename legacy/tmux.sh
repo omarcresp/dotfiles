@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 SESSION="main"
 
 if [ ! -z "$1" ]; then

@@ -30,10 +30,12 @@
     '';
   };
 in {
-environment.systemPackages = [ pkgs.kanata ];
+  environment.systemPackages = [ pkgs.kanata ];
 
   launchd.daemons.kanata = {
     command = "${pkgs.lib.getExe pkgs.kanata} --cfg ${configFile}";
     serviceConfig.RunAtLoad = true;
+    serviceConfig.KeepAlive = true;
+    serviceConfig.StandardOutPath = "/Library/Logs/Kanata/kanata.out.log";
   };
 }

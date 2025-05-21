@@ -34,9 +34,9 @@
     jack-nixvim.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, home-manager, nix-homebrew, nixpkgs-zelda, mac-app-util, ... }: let
+  outputs = inputs@{ self, nix-darwin, home-manager, nix-homebrew, nixpkgs, mac-app-util, ... }: let
     user = "jackcres";
-    zelda64 = system: import nixpkgs-zelda {
+    zelda64 = system: import inputs.nixpkgs-zelda {
       inherit system;
       config.allowUnfree = true;
     };
@@ -46,8 +46,7 @@
       specialArgs = { inherit inputs; inherit user; inherit zelda64; };
       modules = [
         nix-homebrew.darwinModules.nix-homebrew
-        # NOTE: no need at the moment to install. system apps shows up
-        # mac-app-util.darwinModules.default
+        mac-app-util.darwinModules.default
         ./hosts/mbp/system.nix
         home-manager.darwinModules.home-manager
         {
@@ -56,9 +55,31 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.sharedModules = [ mac-app-util.homeManagerModules.default ];
-          home-manager.users.${user} = import ./hosts/mbp/home.nix { inherit inputs user; };
+          home-manager.users.${user} = ./hosts/mbp/home.nix;
+          home-manager.extraSpecialArgs = { inherit inputs user; };
         }
       ];
+    };
+
+    nixosConfigurations = {
+      nixos-jackcres = nixpkgs.lib.nixosSystem {
+        system = null;
+        _module.args = { inherit inputs; inherit user; inherit zelda64; };
+        modules = [
+          { nixpkgs = nixpkgsCfg; }
+          ./hosts/nixos/system.nix
+          home-manager.nixosModules.home-manager
+          {
+            nixpkgs = nixpkgsCfg;
+
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.users.${user} = ./hosts/nixos/home.nix;
+            home-manager.extraSpecialArgs = { inherit inputs user; zelda64 = zelda64.zelda64recomp; };
+          }
+        ];
+      };
     };
   };
 }

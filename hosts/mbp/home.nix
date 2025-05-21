@@ -1,7 +1,5 @@
 { user, inputs, ... }:
 {
-  # TODO: use variable to avoid duplicate username
-  # passing inputs/especialArgs here dont work
   home.username = user;
   home.homeDirectory = "/Users/${user}";
   home.stateVersion = "24.05";
