@@ -5,6 +5,7 @@
   home.stateVersion = "24.05";
 
   _module.args.inputs = inputs;
+  _module.args.sysRebuildCmd = "nixos-rebuild";
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -21,34 +22,13 @@
     PERPLEXITY_API_KEY = "";
   };
 
-  programs.git.signing.signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+  programs.git.signing.signer = pkgs.lib.getExe' pkgs._1password-gui "op-ssh-sign";
+
   home.file = {
     ".ssh/config".source = ../../legacy/ssh-config-nixos;
   };
 
-  home.packages = with pkgs; [
-    openssl
-    ffmpeg
-
-    delve
-    exercism
-
-    # godot_4
-    # insomnia
-    wayshot
-    # gifski
-    # ffmpeg
-
-    rofi
-    bluez
-    rofi-bluetooth
-    pavucontrol
-    pulseaudioFull
-    light
-    wl-clipboard-rs
-
-    zelda64
-  ];
+  home.packages = [ zelda64 ];
 
   home.pointerCursor = {
     name = "phinger-cursors-dark";
@@ -60,6 +40,7 @@
   fonts.fontconfig.enable = true;
 
   imports = [
+    ../../home/hyprland.nix
     ../../home/terminal.nix
     ../../home/development.nix
   ];

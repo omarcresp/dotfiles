@@ -36,14 +36,14 @@
 
   outputs = inputs@{ self, nix-darwin, home-manager, nix-homebrew, nixpkgs, mac-app-util, ... }: let
     user = "jackcres";
-    zelda64 = system: import inputs.nixpkgs-zelda {
-      inherit system;
+    zelda64 = import inputs.nixpkgs-zelda {
+      system = "x86_64-linux";
       config.allowUnfree = true;
     };
     nixpkgsCfg = { config.allowUnfree = true; };
   in {
     darwinConfigurations.pro = nix-darwin.lib.darwinSystem {
-      specialArgs = { inherit inputs; inherit user; inherit zelda64; };
+      specialArgs = { inherit inputs user; };
       modules = [
         nix-homebrew.darwinModules.nix-homebrew
         mac-app-util.darwinModules.default
@@ -64,7 +64,7 @@
     nixosConfigurations = {
       nixos-jackcres = nixpkgs.lib.nixosSystem {
         system = null;
-        _module.args = { inherit inputs; inherit user; inherit zelda64; };
+        specialArgs = { inherit inputs user; };
         modules = [
           { nixpkgs = nixpkgsCfg; }
           ./hosts/nixos/system.nix

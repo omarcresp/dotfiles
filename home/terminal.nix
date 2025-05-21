@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, sysRebuildCmd, ...}:
 {
   home.packages = with pkgs; [
     zsh
@@ -16,6 +16,22 @@
     ".config/tmux/tmux-killer.sh".source = ../legacy/tmux-killer.sh;
     ".config/tmux/tmux.sh".source = ../legacy/tmux.sh;
     ".config/ghostty/config".source = ../legacy/ghostty.config;
+  };
+
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = ''
+      set fish_greeting # Disable greeting
+      fish_vi_key_bindings
+    '';
+    shellAliases = {
+      jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES";
+      jn-update = "nix flake update --flake $JN_DOTFILES";
+      jn-clean = "sudo nix-collect-garbage -d";
+
+      # TODO: create this as independant CLI (or replace with sesh)
+      tm = "sh $HOME/.config/tmux/tmux.sh";
+    };
   };
 
   programs.starship = {

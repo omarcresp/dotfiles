@@ -7,6 +7,9 @@ in {
     clang
     cmake
 
+    # delve
+    # exercism
+
     insomnia
     dbeaver-bin
     code-cursor # TODO: replace with flake. flake is missing darwin support
@@ -16,6 +19,7 @@ in {
     lazygit
     supabase-cli
     tokei
+    docker-compose
 
     rustc
     cargo

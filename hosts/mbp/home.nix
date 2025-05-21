@@ -5,6 +5,7 @@
   home.stateVersion = "24.05";
 
   _module.args.inputs = inputs;
+  _module.args.sysRebuildCmd = "darwin-rebuild";
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -16,27 +17,13 @@
     ".ssh/config".source = ../../legacy/ssh-config-macos;
   };
 
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      set fish_greeting # Disable greeting
-      fish_vi_key_bindings
+  programs.fish.shellInit = ''
+    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
 
-      source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-
-      fish_add_path --prepend \
-        "/etc/profiles/per-user/$USER/bin" \
-        "/run/current-system/sw/bin"
-    '';
-    shellAliases = {
-      jn-system-switch = "sudo darwin-rebuild switch --flake $JN_DOTFILES#pro";
-      jn-update = "nix flake update --flake $JN_DOTFILES";
-      jn-clean = "sudo nix-collect-garbage -d";
-
-      # TODO: create this as independant CLI (or replace with sesh)
-      tm = "sh $HOME/.config/tmux/tmux.sh";
-    };
-  };
+    fish_add_path --prepend \
+      "/etc/profiles/per-user/$USER/bin" \
+      "/run/current-system/sw/bin"
+  '';
 
   imports = [
     ../../home/terminal.nix
