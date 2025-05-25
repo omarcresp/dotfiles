@@ -1,21 +1,21 @@
-{ pkgs, ... }:
-let
-  user = "jackcres";
-in
-{
-  imports = [ ./hardware-configuration.nix ];
+{ pkgs, user, inputs, ... }: {
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  system.stateVersion = "24.05";
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos-${user}"; # Define your hostname.
+  users.users.${user} = {
+    isNormalUser = true;
+    description = "Omar Crespo";
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" "wireshark" ];
+  };
 
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Bogota";
-
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "es_CO.UTF-8";
     LC_IDENTIFICATION = "es_CO.UTF-8";
@@ -36,10 +36,8 @@ in
     ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="${pkgs.coreutils}/bin/chmod 664 /sys/devices/pci0000:00/0000:00:08.1/0000:04:00.0/drm/card1/card1-eDP-1/amdgpu_bl1/brightness"
   '';
 
-  # Configure console keymap
   console.keyMap = "la-latin1";
 
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
   services.pulseaudio.enable = false;
@@ -52,99 +50,9 @@ in
   };
 
   services.kanata.enable = true;
-  services.kanata.keyboards.latam.config = ''
-    (defsrc
-      [ caps esc lctl f j ; ' )
-
-    (defalias low (layer-while-held lower))
-    (defalias raise (layer-while-held higher))
-
-    (deflayermap (base-layer)
-      esc XX
-      ret XX
-      bspc XX
-
-      [ bspc
-      caps (tap-hold 50 120 esc lctl)
-      lctl caps
-      f (tap-hold 200 250 f lalt)
-      j (tap-hold 200 250 j lalt)
-      k (tap-hold 200 250 k k)
-      ; S-Period
-      ' (tap-hold 100 150 ret lctl)
-      IntlBackslash lsft
-      lalt @low
-      ralt @raise
-    )
-
-    (deflayermap (lower)
-      tab RA-}
-      q S-=
-      w -
-      e RA-Backslash
-      r [
-      u RA-Minus
-      i grv
-      o ]
-      p Backslash
-      [ del
-
-      a S-1
-      s S-2
-      d S-3
-      f S-4
-      g S-5
-      h S-6
-      j S-7
-      k S-8
-      l S-9
-      ; S-0
-      ' '
-
-      lsft IntlBackslash
-      IntlBackslash IntlBackslash
-      v RA-'
-      n S-Minus
-      m Equal
-      . S-]
-      / S-/
-    )
-
-    (deflayermap (higher)
-      a 0
-      x 1
-      c 2
-      v 3
-      s 4
-      d 5
-      f 6
-      w 7
-      e 8
-      r 9
-      q RA-q
-
-      h ArrowLeft
-      j ArrowDown
-      k ArrowUp
-      l ArrowRight
-
-      ; S-,
-      ' S-'
-      p S-Backslash
-      n ;
-
-      lsft S-IntlBackslash
-      IntlBackslash S-IntlBackslash
-    )
-  '';
+  services.kanata.keyboards.latam.config = builtins.readFile ../../legacy/kanata-linux.cfg;
 
   services.upower.enable = true;
-
-  users.users.${user} = {
-    isNormalUser = true;
-    description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" "wireshark" ];
-  };
 
   programs.wireshark = {
     enable = true;
@@ -159,12 +67,6 @@ in
   programs.fish.enable = true;
   users.defaultUserShell = pkgs.fish;
 
-  programs._1password.enable = true;
-  programs._1password-gui = {
-    enable = true;
-    polkitPolicyOwners = [ user ];
-  };
-
   programs.wshowkeys.enable = true;
 
   programs.steam = {
@@ -172,6 +74,12 @@ in
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     gamescopeSession.enable = true;
+  };
+
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = [ user ];
   };
 
   environment.etc = {
@@ -192,18 +100,21 @@ in
 
   environment.systemPackages = with pkgs; [
     vim
-    wget
-    gcc
-    zip
-    unzip
-    kanata
-    docker-compose
-    vesktop
+    # TODO: replace with flake. flake is missing darwin support
+    code-cursor
+
+    nautilus
+    ghostty
+    obs-studio
+    anydesk
 
     # Wayland
     libsForQt5.qt5.qtwayland
     libnotify
     swww
+
+    inputs.zen-browser.packages."${pkgs.system}".default
+    inputs.ulauncher.packages."${pkgs.system}".default
   ];
 
   xdg.portal.enable = true;
@@ -213,10 +124,9 @@ in
   hardware.bluetooth.powerOnBoot = true;
 
   environment.variables = {
-    EDITOR = "vim";
+    EDITOR = "nvim";
     NNN_FIFO = "/tmp/nnn.fifo";
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  system.stateVersion = "24.05";
+  imports = [ ./hardware-configuration.nix ../../modules/application.nix ];
 }

@@ -1,5 +1,16 @@
 { pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    wayshot
+    rofi
+    bluez
+    rofi-bluetooth
+    pavucontrol
+    pulseaudioFull
+    light
+    wl-clipboard-rs
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
@@ -21,8 +32,8 @@
 
         "$mainMod, q, killactive"
         "$mainMod, w, exec, zen"
-        "$mainMod, e, exec, kitty /home/jackcres/.config/tmux/tmux.sh"
-        "$mainMod, r, exec, kitty nnn"
+        "$mainMod, e, exec, ghostty"
+        "$mainMod, r, exec, nautilus"
 
         "$mainMod, b, exec, swaync-client -t"
 
@@ -74,7 +85,7 @@
         layout = "dwindle";
       };
     };
-    extraConfig = builtins.readFile ./legacy/hyprland.conf;
+    extraConfig = builtins.readFile ../legacy/hyprland.conf;
   };
 
   services.swaync.enable = true;
