@@ -10,6 +10,9 @@ in {
     # delve
     # exercism
 
+    python313
+    uv
+
     insomnia
     dbeaver-bin
     jnvim
@@ -19,6 +22,7 @@ in {
     supabase-cli
     tokei
     docker-compose
+    terraform
 
     rustc
     cargo

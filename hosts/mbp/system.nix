@@ -31,10 +31,6 @@
   #   dontFixup = true;
   # });
 
-  # TODO: define if 1password place its there
-  programs._1password.enable = true;
-  programs._1password-gui.enable = true;
-
   nix-homebrew = {
     enable = true;
     inherit user;
