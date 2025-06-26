@@ -1,4 +1,5 @@
-{ pkgs, user, ... }: {
+{ pkgs, user, ... }:
+{
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
   nix.settings.experimental-features = "nix-command flakes";
@@ -55,5 +56,8 @@
     # };
   };
 
-  imports = [ ../../modules/application.nix ];
+  imports = [
+    ../../modules/application.nix
+    ../../custom/kanata-darwin.nix
+  ];
 }

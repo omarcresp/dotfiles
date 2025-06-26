@@ -2,7 +2,7 @@
   description = "JackCres nix system flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/master";
     nixpkgs-zelda.url = "github:qubitnano/nixpkgs/pr/recomp";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
@@ -32,52 +32,68 @@
     jack-nixvim.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nix-darwin, home-manager, nix-homebrew, nixpkgs, mac-app-util, ... }: let
-    user = "jackcres";
-    zelda64 = import inputs.nixpkgs-zelda {
-      system = "x86_64-linux";
-      config.allowUnfree = true;
-    };
-    nixpkgsCfg = { config.allowUnfree = true; };
-  in {
-    darwinConfigurations.pro = nix-darwin.lib.darwinSystem {
-      specialArgs = { inherit inputs user; };
-      modules = [
-        nix-homebrew.darwinModules.nix-homebrew
-        mac-app-util.darwinModules.default
-        ./hosts/mbp/system.nix
-        home-manager.darwinModules.home-manager
-        {
-          nixpkgs = nixpkgsCfg;
-
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.sharedModules = [ mac-app-util.homeManagerModules.default ];
-          home-manager.users.${user} = ./hosts/mbp/home.nix;
-          home-manager.extraSpecialArgs = { inherit inputs user; };
-        }
-      ];
-    };
-
-    nixosConfigurations = {
-      nixos-jackcres = nixpkgs.lib.nixosSystem {
-        system = null;
+  outputs =
+    inputs@{
+      self,
+      nix-darwin,
+      home-manager,
+      nix-homebrew,
+      nixpkgs,
+      mac-app-util,
+      ...
+    }:
+    let
+      user = "jackcres";
+      zelda64 = import inputs.nixpkgs-zelda {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
+      nixpkgsCfg = {
+        config.allowUnfree = true;
+      };
+    in
+    {
+      darwinConfigurations.pro = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs user; };
         modules = [
-          { nixpkgs = nixpkgsCfg; }
-          ./hosts/nixos/system.nix
-          home-manager.nixosModules.home-manager
+          nix-homebrew.darwinModules.nix-homebrew
+          mac-app-util.darwinModules.default
+          ./hosts/mbp/system.nix
+          home-manager.darwinModules.home-manager
           {
             nixpkgs = nixpkgsCfg;
 
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.${user} = ./hosts/nixos/home.nix;
-            home-manager.extraSpecialArgs = { inherit inputs user; zelda64 = zelda64.zelda64recomp; };
+            home-manager.sharedModules = [ mac-app-util.homeManagerModules.default ];
+            home-manager.users.${user} = ./hosts/mbp/home.nix;
+            home-manager.extraSpecialArgs = { inherit inputs user; };
           }
         ];
       };
+
+      nixosConfigurations = {
+        nixos-jackcres = nixpkgs.lib.nixosSystem {
+          system = null;
+          specialArgs = { inherit inputs user; };
+          modules = [
+            { nixpkgs = nixpkgsCfg; }
+            ./hosts/nixos/system.nix
+            home-manager.nixosModules.home-manager
+            {
+              nixpkgs = nixpkgsCfg;
+
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.backupFileExtension = "backup";
+              home-manager.users.${user} = ./hosts/nixos/home.nix;
+              home-manager.extraSpecialArgs = {
+                inherit inputs user;
+                zelda64 = zelda64.zelda64recomp;
+              };
+            }
+          ];
+        };
+      };
     };
-  };
 }
