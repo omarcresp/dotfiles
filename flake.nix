@@ -2,7 +2,7 @@
   description = "JackCres nix system flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-zelda.url = "github:qubitnano/nixpkgs/pr/recomp";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
@@ -25,7 +25,7 @@
     zig.url = "github:mitchellh/zig-overlay";
     zig.inputs.nixpkgs.follows = "nixpkgs";
 
-    ulauncher.url = "github:ulauncher/Ulauncher/v6";
+    ulauncher.url = "github:ulauncher/Ulauncher/main";
     ulauncher.inputs.nixpkgs.follows = "nixpkgs";
 
     jack-nixvim.url = "github:omarcresp/jack-nixvim";

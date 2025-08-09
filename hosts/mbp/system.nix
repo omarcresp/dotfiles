@@ -47,6 +47,8 @@
       "lm-studio"
       "anydesk"
       "cursor"
+      "temurin@17"
+      "discord"
     ];
 
     # NOTE: Waiting on billing info to be update
