@@ -47,7 +47,7 @@
       "lm-studio"
       "anydesk"
       "cursor"
-      "temurin@17"
+      "temurin@21"
       "discord"
     ];
 
@@ -60,6 +60,6 @@
 
   imports = [
     ../../modules/application.nix
-    ../../custom/kanata-darwin.nix
+    # ../../custom/kanata-darwin.nix
   ];
 }

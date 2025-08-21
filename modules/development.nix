@@ -1,7 +1,9 @@
-{ pkgs, inputs, ...}: let 
+{ pkgs, inputs, ... }:
+let
   zig-master = inputs.zig.packages."${pkgs.system}".master;
   jnvim = inputs.jack-nixvim.packages.${pkgs.system}.default;
-in {
+in
+{
   home.packages = with pkgs; [
     gnumake
     clang
@@ -16,6 +18,7 @@ in {
     insomnia
     dbeaver-bin
     jnvim
+    claude-code
 
     lazydocker
     lazygit
