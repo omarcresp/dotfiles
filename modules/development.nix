@@ -12,9 +12,6 @@ in
     # delve
     # exercism
 
-    python313
-    uv
-
     insomnia
     dbeaver-bin
     jnvim
@@ -22,10 +19,8 @@ in
 
     lazydocker
     lazygit
-    supabase-cli
     tokei
     docker-compose
-    terraform
 
     rustc
     cargo
@@ -36,7 +31,6 @@ in
 
     nodejs
     bun
-    biome
     deno
 
     zig-master

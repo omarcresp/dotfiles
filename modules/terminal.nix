@@ -10,6 +10,7 @@
     nerd-fonts.jetbrains-mono
     zip
     unzip
+    dbmate
   ];
 
   home.file = {

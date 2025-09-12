@@ -47,15 +47,13 @@
       "lm-studio"
       "anydesk"
       "cursor"
-      "temurin@21"
       "discord"
     ];
 
-    # NOTE: Waiting on billing info to be update
-    # masApps = {
-    #   "Ghostery" = 6504861501;
-    #   "1PasswordSafari" = 1569813296;
-    # };
+    masApps = {
+      "Ghostery" = 6504861501;
+      "1PasswordSafari" = 1569813296;
+    };
   };
 
   imports = [
