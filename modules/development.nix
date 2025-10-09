@@ -44,6 +44,7 @@ in
   };
 
   programs.awscli.enable = true;
+  programs.codex.enable = true;
 
   programs.git = {
     enable = true;

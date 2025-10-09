@@ -1,5 +1,14 @@
-{ pkgs, user, inputs, ... }: {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+{
+  pkgs,
+  user,
+  inputs,
+  ...
+}:
+{
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   system.stateVersion = "24.05";
 
   boot.loader.systemd-boot.enable = true;
@@ -9,7 +18,16 @@
   users.users.${user} = {
     isNormalUser = true;
     description = "Omar Crespo";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "video" "docker" "adbusers" "wireshark" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "uinput"
+      "input"
+      "video"
+      "docker"
+      "adbusers"
+      "wireshark"
+    ];
   };
 
   networking.networkmanager.enable = true;
@@ -49,7 +67,7 @@
     pulse.enable = true;
   };
 
-  services.kanata.enable = true;
+  services.kanata.enable = false;
   services.kanata.keyboards.latam.config = builtins.readFile ../../legacy/kanata-linux.cfg;
 
   services.upower.enable = true;
@@ -110,6 +128,7 @@
     swww
 
     inputs.zen-browser.packages."${pkgs.system}".default
+    google-chrome
     inputs.ulauncher.packages."${pkgs.system}".default
   ];
 
@@ -124,5 +143,8 @@
     NNN_FIFO = "/tmp/nnn.fifo";
   };
 
-  imports = [ ./hardware-configuration.nix ../../modules/application.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ../../modules/application.nix
+  ];
 }

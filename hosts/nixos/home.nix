@@ -1,4 +1,10 @@
-{ pkgs, inputs, zelda64, user, ... }:
+{
+  pkgs,
+  inputs,
+  zelda64,
+  user,
+  ...
+}:
 {
   home.username = user;
   home.homeDirectory = "/home/${user}";
@@ -11,11 +17,9 @@
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles";
 
-    ANTHROPIC_API_KEY =
-      "";
+    ANTHROPIC_API_KEY = "";
     TAVILY_API_KEY = "";
-    OPENAI_API_KEY =
-      "";
+    OPENAI_API_KEY = "";
     GEMINI_API_KEY = "";
     KLUSTER_API_KEY = "";
     GROQ_API_KEY = "";
@@ -28,7 +32,10 @@
     ".ssh/config".source = ../../legacy/ssh-config-nixos;
   };
 
-  home.packages = [ zelda64 ];
+  home.packages = [
+    zelda64
+    pkgs.prismlauncher
+  ];
 
   home.pointerCursor = {
     name = "phinger-cursors-dark";
