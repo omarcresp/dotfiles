@@ -16,6 +16,9 @@ in
     dbeaver-bin
     jnvim
     claude-code
+    flyctl
+    wrangler
+    redis
 
     lazydocker
     lazygit

@@ -97,11 +97,10 @@
     enable = true;
 
     casks = [
+      "cursor"
       "docker"
       "zen"
       "ghostty"
-      "lm-studio"
-      "cursor"
     ];
 
     masApps = {
