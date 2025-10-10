@@ -53,7 +53,7 @@
       };
     in
     {
-      darwinConfigurations.pro = nix-darwin.lib.darwinSystem {
+      darwinConfigurations."Omars-MacBook-Pro" = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs user; };
         modules = [
           nix-homebrew.darwinModules.nix-homebrew

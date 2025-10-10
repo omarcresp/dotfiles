@@ -29,7 +29,7 @@
       fish_add_path $HOME/.local/bin
     '';
     shellAliases = {
-      jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES#pro";
+      jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES";
       jn-update = "nix flake update --flake $JN_DOTFILES";
       jn-clean = "sudo nix-collect-garbage -d";
 
