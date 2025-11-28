@@ -2,7 +2,7 @@
   description = "JackCres nix system flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/master";
     nixpkgs-zelda.url = "github:qubitnano/nixpkgs/pr/recomp";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
@@ -11,7 +11,7 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     mac-app-util.url = "github:hraban/mac-app-util";
-    mac-app-util.inputs.nixpkgs.follows = "nixpkgs";
+    mac-app-util.inputs.cl-nix-lite.url = "github:r4v3n6101/cl-nix-lite/url-fix";
 
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";

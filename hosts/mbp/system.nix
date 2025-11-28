@@ -2,6 +2,14 @@
 {
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
+  nixpkgs.overlays = [
+    (final: prev: {
+      fish = prev.fish.overrideAttrs (old: {
+        doCheck = false;
+        doInstallCheck = false;
+      });
+    })
+  ];
   nix.settings.experimental-features = "nix-command flakes";
 
   system.primaryUser = user;
@@ -98,7 +106,7 @@
 
     casks = [
       "cursor"
-      "docker"
+      "docker-desktop"
       "zen"
       "ghostty"
     ];

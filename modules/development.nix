@@ -1,7 +1,8 @@
 { pkgs, inputs, ... }:
 let
-  zig-master = inputs.zig.packages."${pkgs.system}".master;
-  jnvim = inputs.jack-nixvim.packages.${pkgs.system}.default;
+  system = pkgs.stdenv.hostPlatform.system;
+  zig-master = inputs.zig.packages."${system}".master;
+  jnvim = inputs.jack-nixvim.packages."${system}".default;
 in
 {
   home.packages = with pkgs; [
@@ -19,19 +20,27 @@ in
     flyctl
     wrangler
     redis
+    postgresql
 
     lazydocker
     lazygit
     tokei
+    code2prompt
     docker-compose
 
+    # Rust
     rustc
     cargo
     silicon
 
+    # Go
     go
     air
 
+    # Python
+    uv
+
+    # Javascript
     nodejs
     bun
     deno
@@ -46,19 +55,21 @@ in
     ];
   };
 
-  programs.awscli.enable = true;
+  # programs.awscli.enable = true;
   programs.codex.enable = true;
 
   programs.git = {
     enable = true;
-    userEmail = "crespomerchano@gmail.com";
-    userName = "Omar Crespo";
     signing = {
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFY5mL5Pt4Djk2AibDNdHLvXwXmCSiX2Qze+hbhDMP/D";
       format = "ssh";
       signByDefault = true;
     };
-    extraConfig = {
+    settings = {
+      user = {
+        email = "crespomerchano@gmail.com";
+        name = "Omar Crespo";
+      };
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
     };
