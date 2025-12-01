@@ -54,16 +54,20 @@
 
         "SHIFT, Print, exec, wayshot --file ~/Pictures/shots/shot_$(date +%Y-%m-%d_%H-%M-%S).png"
         ", Print, exec, wayshot --stdout | wl-copy"
-      ] ++ (
+      ]
+      ++ (
         # workspaces
         # binds $mod + [shift +] {a,s,d..l} to [move to] workspace {1..9}
-        builtins.concatLists (builtins.genList (i:
-            let ws = i + 1;
-            in [
+        builtins.concatLists (
+          builtins.genList (
+            i:
+            let
+              ws = i + 1;
+            in
+            [
               "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
             ]
-          )
-          9
+          ) 9
         )
       );
       # https://wiki.hyprland.org/Configuring/Variables/#general
@@ -186,7 +190,10 @@
         # ];
 
         # TODO: wifi bluetooth tray
-        modules-left = [ "group/group-power" "hyprland/workspaces" ];
+        modules-left = [
+          "group/group-power"
+          "hyprland/workspaces"
+        ];
         modules-center = [ "clock" ];
         modules-right = [
           "temperature"
@@ -208,7 +215,17 @@
         backlight = {
           device = "amdgpu_bl1";
           format = " {icon}  {percent}%";
-          format-icons = ["" "" "" "" "" "" "" "" ""];
+          format-icons = [
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+            ""
+          ];
           on-scroll-up = "light -A 5";
           on-scroll-down = "light -U 5";
         };
@@ -246,7 +263,10 @@
             phone = "";
             portable = "";
             car = "";
-            default = [ "" "" ];
+            default = [
+              ""
+              ""
+            ];
           };
           scroll-step = 3;
           on-click = "pavucontrol";
@@ -255,17 +275,27 @@
         };
         battery = {
           states = {
-              complete = 100;
-              mid = 99;
-              warning = 30;
-              critical = 15;
+            complete = 100;
+            mid = 99;
+            warning = 30;
+            critical = 15;
           };
           interval = 10;
           format = " {icon}  {capacity}%";
           format-full = " 󰚥  {capacity}%";
           format-complete = " 󰁹  {capacity}%";
           format-charging = " {icon}󱐋  {capacity}%";
-          format-icons = ["󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂"];
+          format-icons = [
+            "󰁺"
+            "󰁻"
+            "󰁼"
+            "󰁽"
+            "󰁾"
+            "󰁿"
+            "󰂀"
+            "󰂁"
+            "󰂂"
+          ];
         };
 
         # modules-left = [ "group/group-power" ];

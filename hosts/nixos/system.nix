@@ -67,8 +67,10 @@
     pulse.enable = true;
   };
 
-  services.kanata.enable = false;
+  services.kanata.enable = true;
   services.kanata.keyboards.latam.config = builtins.readFile ../../legacy/kanata-linux.cfg;
+
+  services.mullvad-vpn.enable = true;
 
   services.upower.enable = true;
 
@@ -116,6 +118,7 @@
     vim
     # TODO: replace with flake. flake is missing darwin support
     code-cursor
+    mullvad-vpn
 
     nautilus
     ghostty
