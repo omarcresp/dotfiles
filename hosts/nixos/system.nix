@@ -96,6 +96,8 @@
     gamescopeSession.enable = true;
   };
 
+  programs.nix-ld.enable = true;
+
   programs._1password-gui.polkitPolicyOwners = [ user ];
 
   environment.etc = {
@@ -144,6 +146,7 @@
   environment.variables = {
     EDITOR = "nvim";
     NNN_FIFO = "/tmp/nnn.fifo";
+    SSH_AUTH_SOCK = "~/.1password/agent.sock";
   };
 
   imports = [
