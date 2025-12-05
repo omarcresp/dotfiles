@@ -31,7 +31,7 @@
         "$mainMod, mouse:272, movewindow"
 
         "$mainMod, q, killactive"
-        "$mainMod, w, exec, zen"
+        "$mainMod, w, exec, zen-beta"
         "$mainMod, e, exec, ghostty"
         "$mainMod, r, exec, nautilus"
 
