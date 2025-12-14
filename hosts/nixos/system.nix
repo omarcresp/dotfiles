@@ -87,8 +87,6 @@
   programs.fish.enable = true;
   users.defaultUserShell = pkgs.fish;
 
-  programs.wshowkeys.enable = true;
-
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -104,6 +102,7 @@
     "1password/custom_allowed_browsers" = {
       text = ''
         .zen-beta
+        .zen
       '';
       mode = "0755";
     };
@@ -119,13 +118,13 @@
   environment.systemPackages = with pkgs; [
     vim
     # TODO: replace with flake. flake is missing darwin support
-    code-cursor
+    # code-cursor
     mullvad-vpn
 
     nautilus
     ghostty
     obs-studio
-    anydesk
+    # anydesk
 
     # Wayland
     libsForQt5.qt5.qtwayland
@@ -135,6 +134,7 @@
     inputs.zen-browser.packages."${pkgs.system}".default
     google-chrome
     inputs.ulauncher.packages."${pkgs.system}".default
+    inputs.cursor.packages."${pkgs.system}".default
   ];
 
   xdg.portal.enable = true;

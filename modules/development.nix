@@ -17,9 +17,9 @@ in
     dbeaver-bin
     jnvim
     claude-code
-    flyctl
-    wrangler
-    redis
+    # flyctl
+    # wrangler
+    # redis
     postgresql
 
     lazydocker

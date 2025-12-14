@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-zelda.url = "github:qubitnano/nixpkgs/pr/recomp";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -44,10 +43,6 @@
     }:
     let
       user = "jackcres";
-      zelda64 = import inputs.nixpkgs-zelda {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
-      };
       nixpkgsCfg = {
         config.allowUnfree = true;
       };
@@ -89,7 +84,6 @@
               home-manager.users.${user} = ./hosts/nixos/home.nix;
               home-manager.extraSpecialArgs = {
                 inherit inputs user;
-                zelda64 = zelda64.zelda64recomp;
               };
             }
           ];

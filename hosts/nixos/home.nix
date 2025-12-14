@@ -1,7 +1,6 @@
 {
   pkgs,
   inputs,
-  zelda64,
   user,
   ...
 }:
@@ -33,7 +32,7 @@
   };
 
   home.packages = [
-    zelda64
+    pkgs.zelda64recomp
     pkgs.prismlauncher
   ];
 
