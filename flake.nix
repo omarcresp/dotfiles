@@ -17,6 +17,7 @@
 
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
+    zen-browser.inputs.home-manager.follows = "home-manager";
 
     cursor.url = "github:omarcresp/cursor-flake";
     cursor.inputs.nixpkgs.follows = "nixpkgs";

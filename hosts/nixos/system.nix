@@ -124,6 +124,7 @@
     nautilus
     ghostty
     obs-studio
+    vesktop
     # anydesk
 
     # Wayland
