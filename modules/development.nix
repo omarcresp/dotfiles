@@ -25,6 +25,7 @@ in
     lazydocker
     lazygit
     tokei
+    jq
     code2prompt
     docker-compose
 
@@ -44,6 +45,8 @@ in
     nodejs
     bun
     deno
+    pnpm
+    openssl
 
     zig-master
   ];
