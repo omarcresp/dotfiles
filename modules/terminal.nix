@@ -11,6 +11,7 @@
     zip
     unzip
     dbmate
+    sqlc
   ];
 
   home.file = {
@@ -35,6 +36,7 @@
 
       # TODO: create this as independant CLI (or replace with sesh)
       tm = "sh $HOME/.config/tmux/tmux.sh";
+      chrome = "google-chrome-stable";
     };
   };
 

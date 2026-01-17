@@ -26,7 +26,6 @@
       "video"
       "docker"
       "adbusers"
-      "wireshark"
     ];
   };
 
@@ -74,11 +73,6 @@
 
   services.upower.enable = true;
 
-  programs.wireshark = {
-    enable = true;
-    dumpcap.enable = true;
-  };
-
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
@@ -110,8 +104,8 @@
 
   services.getty.autologinUser = user;
   environment.loginShellInit = ''
-    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
-      exec Hyprland
+    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+      exec start-hyprland
     fi
   '';
 

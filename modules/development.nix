@@ -7,7 +7,8 @@ in
 {
   home.packages = with pkgs; [
     gnumake
-    clang
+    # clang
+    gcc
     cmake
 
     # delve
@@ -17,6 +18,7 @@ in
     dbeaver-bin
     jnvim
     claude-code
+    opencode
     # flyctl
     # wrangler
     # redis
