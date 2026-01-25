@@ -1,8 +1,8 @@
 { pkgs, ... }:
 let
-  accent = "rgba(7aa2f7ee)";
-  accent_alt = "rgba(e0af68ee)";
-  border_inactive = "rgba(2b303baa)";
+  accent = "rgba(5d74b3cc)";
+  accent_alt = "rgba(3b4a66cc)";
+  border_inactive = "rgba(262b36b3)";
   shadow = "rgba(0f1115cc)";
   workspace_binds = builtins.concatLists (
     builtins.genList (
@@ -105,10 +105,12 @@ in
         rounding = 10;
         active_opacity = 0.98;
         inactive_opacity = 0.93;
-        drop_shadow = true;
-        shadow_range = 16;
-        shadow_render_power = 3;
-        "col.shadow" = shadow;
+        shadow = {
+          enabled = true;
+          range = 16;
+          render_power = 3;
+          color = shadow;
+        };
         blur = {
           enabled = true;
           size = 6;
@@ -143,9 +145,6 @@ in
         force_default_wallpaper = -1;
         disable_hyprland_logo = true;
       };
-      windowrule = [
-        "match:class .*, suppressevent maximize"
-      ];
       bindm = [
         "$mainMod, mouse:272, movewindow"
       ];

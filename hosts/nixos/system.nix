@@ -4,6 +4,9 @@
   inputs,
   ...
 }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+in
 {
   nix.settings.experimental-features = [
     "nix-command"
@@ -131,10 +134,10 @@
     libnotify
     swww
 
-    inputs.zen-browser.packages."${pkgs.system}".default
+    inputs.zen-browser.packages."${system}".default
     google-chrome
-    inputs.ulauncher.packages."${pkgs.system}".default
-    inputs.cursor.packages."${pkgs.system}".default
+    inputs.ulauncher.packages."${system}".default
+    inputs.cursor.packages."${system}".default
   ];
 
   xdg.portal.enable = true;
