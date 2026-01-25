@@ -45,7 +45,10 @@
     LC_TIME = "es_CO.UTF-8";
   };
 
-  programs.hyprland.enable = true;
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
 
   # Screen bright patch
   services.udev.extraRules = ''

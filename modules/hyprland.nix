@@ -1,4 +1,49 @@
 { pkgs, ... }:
+let
+  accent = "rgba(7aa2f7ee)";
+  accent_alt = "rgba(e0af68ee)";
+  border_inactive = "rgba(2b303baa)";
+  shadow = "rgba(0f1115cc)";
+  workspace_binds = builtins.concatLists (
+    builtins.genList (
+      i:
+      let
+        ws = i + 1;
+      in
+      [
+        "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
+      ]
+    ) 9
+  );
+  main_binds = [
+    "$mainMod, q, killactive"
+    "$mainMod, w, exec, zen-beta"
+    "$mainMod, e, exec, ghostty"
+    "$mainMod, r, exec, nautilus"
+    "$mainMod, b, exec, swaync-client -t"
+    "$mainMod, Tab, focusmonitor, +1"
+    "$mainMod, X, movecurrentworkspacetomonitor, +1"
+    "$mainMod, Space, exec, ulauncher-toggle"
+    "$mainMod, o, exec, hyprctl dispatch pin active"
+    "$mainMod, V, togglefloating"
+    "$mainMod, P, pseudo"
+    "$mainMod, left, movefocus, l"
+    "$mainMod, right, movefocus, r"
+    "$mainMod, up, movefocus, u"
+    "$mainMod, down, movefocus, d"
+    "$mainMod, a, workspace, 1"
+    "$mainMod, s, workspace, 2"
+    "$mainMod, d, workspace, 3"
+    "$mainMod, f, workspace, 4"
+    "$mainMod, g, workspace, 5"
+    "$mainMod, h, workspace, 6"
+    "$mainMod, j, workspace, 7"
+    "$mainMod, k, workspace, 8"
+    "$mainMod, l, workspace, 9"
+    "SHIFT, Print, exec, wayshot --file ~/Pictures/shots/shot_$(date +%Y-%m-%d_%H-%M-%S).png"
+    ", Print, exec, wayshot --stdout | wl-copy"
+  ];
+in
 {
   home.packages = with pkgs; [
     wayshot
@@ -16,80 +61,96 @@
     xwayland.enable = true;
     systemd.enable = true;
     settings = {
+      "$mainMod" = "SUPER";
       monitor = [
         "eDP-1, 1366x768@60, 0x0, 1"
         "HDMI-A-1, 1920x1080@60, auto-left, 1"
+      ];
+      env = [
+        "XCURSOR_SIZE,24"
+        "HYPRCURSOR_SIZE,24"
       ];
       cursor = {
         inactive_timeout = 3;
       };
       exec-once = [
-        "waybar & 1password & swww-daemon &"
+        "swww-daemon"
+        "waybar"
+        "1password"
       ];
-      "$mainMod" = "SUPER";
-      bind = [
-        "$mainMod, mouse:272, movewindow"
-
-        "$mainMod, q, killactive"
-        "$mainMod, w, exec, zen-beta"
-        "$mainMod, e, exec, ghostty"
-        "$mainMod, r, exec, nautilus"
-
-        "$mainMod, b, exec, swaync-client -t"
-
-        "$mainMod, Tab, focusmonitor, +1"
-        "$mainMod, X, movecurrentworkspacetomonitor, +1"
-        "$mainMod, Space, exec, ulauncher-toggle"
-        "$mainMod, o, exec, hyprctl dispatch pin active"
-
-        "$mainMod, a, workspace, 1"
-        "$mainMod, s, workspace, 2"
-        "$mainMod, d, workspace, 3"
-        "$mainMod, f, workspace, 4"
-        "$mainMod, g, workspace, 5"
-        "$mainMod, h, workspace, 6"
-        "$mainMod, j, workspace, 7"
-        "$mainMod, k, workspace, 8"
-        "$mainMod, l, workspace, 9"
-
-        "SHIFT, Print, exec, wayshot --file ~/Pictures/shots/shot_$(date +%Y-%m-%d_%H-%M-%S).png"
-        ", Print, exec, wayshot --stdout | wl-copy"
-      ]
-      ++ (
-        # workspaces
-        # binds $mod + [shift +] {a,s,d..l} to [move to] workspace {1..9}
-        builtins.concatLists (
-          builtins.genList (
-            i:
-            let
-              ws = i + 1;
-            in
-            [
-              "$mainMod SHIFT, code:1${toString i}, movetoworkspace, ${toString ws}"
-            ]
-          ) 9
-        )
-      );
-      # https://wiki.hyprland.org/Configuring/Variables/#general
+      input = {
+        kb_layout = "latam";
+        follow_mouse = 1;
+        sensitivity = 0;
+        touchpad = {
+          natural_scroll = true;
+        };
+      };
+      gestures = {
+        gesture = [
+          "3, horizontal, workspace"
+        ];
+      };
       general = {
-        gaps_in = 5;
-        gaps_out = 8;
-
+        gaps_in = 6;
+        gaps_out = 12;
         border_size = 2;
-
-        # https://wiki.hyprland.org/Configuring/Variables/#variable-types for info about colors
-        "col.active_border" = "rgba(191970ee) rgba(4b0082ee) 45deg";
-        "col.inactive_border" = "rgba(595959aa)";
-
+        "col.active_border" = "${accent} ${accent_alt} 45deg";
+        "col.inactive_border" = border_inactive;
         resize_on_border = true;
-
-        # Please see https://wiki.hyprland.org/Configuring/Tearing/ before you turn this on
         allow_tearing = false;
-
         layout = "dwindle";
       };
+      decoration = {
+        rounding = 10;
+        active_opacity = 0.98;
+        inactive_opacity = 0.93;
+        drop_shadow = true;
+        shadow_range = 16;
+        shadow_render_power = 3;
+        "col.shadow" = shadow;
+        blur = {
+          enabled = true;
+          size = 6;
+          passes = 2;
+          vibrancy = 0.18;
+        };
+      };
+      animations = {
+        enabled = true;
+        bezier = [
+          "easeOut, 0.22, 1, 0.36, 1"
+          "easeIn, 0.12, 0, 0.39, 0"
+          "easeInOut, 0.65, 0, 0.35, 1"
+        ];
+        animation = [
+          "windows, 1, 7, easeOut"
+          "windowsOut, 1, 6, easeIn, popin 85%"
+          "border, 1, 9, easeInOut"
+          "borderangle, 1, 8, easeInOut"
+          "fade, 1, 6, default"
+          "workspaces, 1, 6, easeOut, slide"
+        ];
+      };
+      dwindle = {
+        pseudotile = true;
+        preserve_split = true;
+      };
+      master = {
+        new_status = "master";
+      };
+      misc = {
+        force_default_wallpaper = -1;
+        disable_hyprland_logo = true;
+      };
+      windowrule = [
+        "match:class .*, suppressevent maximize"
+      ];
+      bindm = [
+        "$mainMod, mouse:272, movewindow"
+      ];
+      bind = main_binds ++ workspace_binds;
     };
-    extraConfig = builtins.readFile ../legacy/hyprland.conf;
   };
 
   services.swaync.enable = true;
