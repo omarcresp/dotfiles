@@ -80,6 +80,7 @@ in
   services.upower.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
   virtualisation.docker = {
     enable = true;
@@ -141,7 +142,10 @@ in
   ];
 
   xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal.extraPortals = [
+    pkgs.xdg-desktop-portal-gtk
+    pkgs.xdg-desktop-portal-hyprland
+  ];
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
@@ -149,7 +153,7 @@ in
   environment.variables = {
     EDITOR = "nvim";
     NNN_FIFO = "/tmp/nnn.fifo";
-    SSH_AUTH_SOCK = "~/.1password/agent.sock";
+    SSH_AUTH_SOCK = "/home/${user}/.1password/agent.sock";
   };
 
   imports = [

@@ -74,7 +74,6 @@ in
         inactive_timeout = 3;
       };
       exec-once = [
-        "swww-daemon"
         "waybar"
         "1password"
       ];
@@ -140,10 +139,6 @@ in
       };
       master = {
         new_status = "master";
-      };
-      misc = {
-        force_default_wallpaper = -1;
-        disable_hyprland_logo = true;
       };
       bindm = [
         "$mainMod, mouse:272, movewindow"
