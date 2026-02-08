@@ -37,6 +37,11 @@
       # TODO: create this as independant CLI (or replace with sesh)
       tm = "sh $HOME/.config/tmux/tmux.sh";
       chrome = "google-chrome-stable";
+
+      # AI coding assistants
+      cc = "nix run github:sadjow/claude-code-nix";
+      co = "nix run github:sadjow/codex-nix";
+      oc = "npx opencode-ai";
     };
   };
 
