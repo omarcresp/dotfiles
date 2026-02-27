@@ -5,7 +5,6 @@
     wget
     btop
     fastfetch
-    fzf
     dust
     nerd-fonts.jetbrains-mono
     zip
@@ -16,7 +15,6 @@
 
   home.file = {
     ".config/tmux/tmux-killer.sh".source = ../legacy/tmux-killer.sh;
-    ".config/tmux/tmux.sh".source = ../legacy/tmux.sh;
     ".config/ghostty/config".source = ../legacy/ghostty.config;
   };
 
@@ -34,8 +32,6 @@
       jn-update = "nix flake update --flake $JN_DOTFILES";
       jn-clean = "sudo nix-collect-garbage -d";
 
-      # TODO: create this as independant CLI (or replace with sesh)
-      tm = "sh $HOME/.config/tmux/tmux.sh";
       chrome = "google-chrome-stable";
 
       # AI coding assistants
@@ -60,6 +56,28 @@
     enableZshIntegration = true;
   };
 
+  programs.fzf = {
+    enable = true;
+    tmux.enableShellIntegration = true;
+  };
+
+  programs.sesh = {
+    enable = true;
+    tmuxKey = "p";
+    settings = {
+      default_session = {
+        startup_command = "nvim";
+      };
+      session = [
+        {
+          name = "dotfiles";
+          path = "~/.config/dotfiles";
+          startup_command = "nvim";
+        }
+      ];
+    };
+  };
+
   programs.tmux = {
     enable = true;
     terminal = "xterm-256color";
@@ -67,15 +85,6 @@
       tmuxPlugins.sensible
       tmuxPlugins.tmux-fzf
       tmuxPlugins.vim-tmux-navigator
-      {
-        plugin = tmuxPlugins.session-wizard;
-        extraConfig = ''
-          # Fzf key bindings
-          unbind p
-          unbind C-p
-          set -g @session-wizard 'p'
-        '';
-      }
       {
         plugin = tmuxPlugins.tokyo-night-tmux;
         extraConfig = ''
@@ -125,7 +134,7 @@
 
        # Go back to main
        unbind m
-       bind-key -r m run-shell '$HOME/.config/tmux/tmux.sh'
+       bind-key -r m run-shell 'sesh connect main'
 
        # Lazygit quick access
        unbind g
