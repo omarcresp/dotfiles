@@ -16,6 +16,10 @@
   home.file = {
     ".config/tmux/tmux-killer.sh".source = ../legacy/tmux-killer.sh;
     ".config/ghostty/config".source = ../legacy/ghostty.config;
+    ".config/sesh/startup.sh" = {
+      source = ../legacy/sesh-startup.sh;
+      executable = true;
+    };
   };
 
   programs.fish = {
@@ -66,7 +70,7 @@
     tmuxKey = "p";
     settings = {
       default_session = {
-        startup_command = "nvim";
+        startup_command = "~/.config/sesh/startup.sh";
       };
       session = [
         {
@@ -80,7 +84,7 @@
 
   programs.tmux = {
     enable = true;
-    terminal = "xterm-256color";
+    terminal = "tmux-256color";
     plugins = with pkgs; [
       tmuxPlugins.sensible
       tmuxPlugins.tmux-fzf
@@ -101,6 +105,9 @@
       }
     ];
     extraConfig = ''
+       # Truecolor support
+       set -as terminal-overrides ",*:RGB"
+
        set -s escape-time 0
        set -g mouse on
        set-option -g default-shell $SHELL
