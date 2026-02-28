@@ -16,10 +16,6 @@
   home.file = {
     ".config/tmux/tmux-killer.sh".source = ../legacy/tmux-killer.sh;
     ".config/ghostty/config".source = ../legacy/ghostty.config;
-    ".config/sesh/startup.sh" = {
-      source = ../legacy/sesh-startup.sh;
-      executable = true;
-    };
   };
 
   programs.fish = {
@@ -69,9 +65,16 @@
     enable = true;
     tmuxKey = "p";
     settings = {
-      default_session = {
-        startup_command = "~/.config/sesh/startup.sh";
-      };
+      window = [
+        { name = "nvim"; startup_command = "nvim"; }
+        { name = "claude"; startup_command = "nix run github:sadjow/claude-code-nix"; }
+        { name = "lazygit"; startup_command = "lazygit"; }
+        { name = "terminal"; }
+      ];
+      wildcard = [
+        { pattern = "~/Programming/*"; windows = [ "nvim" "claude" "lazygit" "terminal" ]; }
+        { pattern = "~/Programming/*/*"; windows = [ "nvim" "claude" "lazygit" "terminal" ]; }
+      ];
       session = [
         {
           name = "dotfiles";
