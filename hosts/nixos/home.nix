@@ -4,9 +4,6 @@
   user,
   ...
 }:
-let
-  system = pkgs.stdenv.hostPlatform.system;
-in
 {
   home.username = user;
   home.homeDirectory = "/home/${user}";
@@ -33,7 +30,6 @@ in
   home.packages = [
     pkgs.zelda64recomp
     pkgs.prismlauncher
-    inputs.t3code-flake.packages."${system}".t3-code
   ];
 
   home.pointerCursor = {

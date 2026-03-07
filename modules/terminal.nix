@@ -1,4 +1,4 @@
-{ pkgs, sysRebuildCmd, ... }:
+{ pkgs, sysRebuildCmd, user, ... }:
 {
   home.packages = with pkgs; [
     zsh
@@ -123,6 +123,9 @@
       }
     ];
     extraConfig = ''
+       # Ensure nix paths are available in run-shell commands
+       set-environment -g PATH "/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
        # Truecolor support
        set -as terminal-overrides ",*:RGB"
 
