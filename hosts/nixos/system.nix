@@ -32,6 +32,21 @@ in
     ];
   };
 
+  security.pam.loginLimits = [
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "65536";
+    }
+    {
+      domain = "*";
+      type = "hard";
+      item = "nofile";
+      value = "524288";
+    }
+  ];
+
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Bogota";
