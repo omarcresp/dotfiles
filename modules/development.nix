@@ -3,6 +3,8 @@ let
   system = pkgs.stdenv.hostPlatform.system;
   zig-master = inputs.zig.packages."${system}".master;
   jnvim = inputs.jack-nixvim.packages."${system}".default;
+  claude-code = inputs.claude-code.packages."${system}".default;
+  codex = inputs.codex.packages."${system}".default;
 in
 {
   home.packages = with pkgs; [
@@ -18,6 +20,7 @@ in
     dbeaver-bin
     jnvim
     claude-code
+    codex
     opencode
     # flyctl
     # wrangler
@@ -61,7 +64,6 @@ in
   };
 
   # programs.awscli.enable = true;
-  programs.codex.enable = true;
 
   programs.git = {
     enable = true;

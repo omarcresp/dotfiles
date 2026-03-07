@@ -27,6 +27,12 @@
 
     jack-nixvim.url = "github:omarcresp/jack-nixvim";
     jack-nixvim.inputs.nixpkgs.follows = "nixpkgs";
+
+    claude-code.url = "github:sadjow/claude-code-nix";
+    claude-code.inputs.nixpkgs.follows = "nixpkgs";
+
+    codex.url = "github:sadjow/codex-nix";
+    codex.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
