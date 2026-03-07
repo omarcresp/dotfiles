@@ -1,5 +1,41 @@
 { ... }:
 {
+  xdg.configFile."cosmic/com.system76.CosmicAppList/v1/favorites".text = ''
+    [
+      "zen-beta",
+      "com.mitchellh.ghostty",
+      "cursor",
+      "com.system76.CosmicFiles",
+    ]
+  '';
+
+  xdg.configFile."cosmic/com.system76.CosmicComp/v1/autotile".text = "true";
+  xdg.configFile."cosmic/com.system76.CosmicComp/v1/autotile_behavior".text = "Global";
+
+  xdg.configFile."cosmic/com.system76.CosmicPanel.Dock/v1/plugins_center".text = ''
+    Some([
+      "com.system76.CosmicAppList",
+    ])
+  '';
+  xdg.configFile."cosmic/com.system76.CosmicPanel.Dock/v1/plugins_wings".text = "None";
+
+  xdg.configFile."cosmic/com.system76.CosmicPanel.Panel/v1/plugins_wings".text = ''
+    Some((
+      [
+        "com.system76.CosmicPanelWorkspacesButton",
+      ],
+      [
+        "com.system76.CosmicAppletStatusArea",
+        "com.system76.CosmicAppletAudio",
+        "com.system76.CosmicAppletBluetooth",
+        "com.system76.CosmicAppletNetwork",
+        "com.system76.CosmicAppletBattery",
+        "com.system76.CosmicAppletNotifications",
+        "com.system76.CosmicAppletPower",
+      ]
+    ))
+  '';
+
   xdg.configFile."cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom".text = ''
     {
       (modifiers: [Super], key: "q"): Close,
