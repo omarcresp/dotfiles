@@ -33,6 +33,9 @@
 
     codex.url = "github:sadjow/codex-nix";
     codex.inputs.nixpkgs.follows = "nixpkgs";
+
+    t3code-flake.url = "github:omarcresp/t3code-flake";
+    t3code-flake.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

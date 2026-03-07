@@ -467,6 +467,7 @@
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs_3",
+        "t3code-flake": "t3code-flake",
         "zen-browser": "zen-browser",
         "zig": "zig"
       }
@@ -584,6 +585,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "t3code-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772853307,
+        "narHash": "sha256-pAbRX3gk4OuyR1u2K8HFIotlqiXWv8ihZ2QoKOfT5+M=",
+        "owner": "omarcresp",
+        "repo": "t3code-flake",
+        "rev": "3b821be313e1631a95b9ee448dd5ef0fd61c82a7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "omarcresp",
+        "repo": "t3code-flake",
         "type": "github"
       }
     },
