@@ -16,6 +16,7 @@
   '';
   xdg.configFile."cosmic/com.system76.CosmicComp/v1/workspaces".text = ''
     (
+      workspace_mode: OutputBound,
       workspace_layout: Horizontal,
       action_on_typing: None,
     )

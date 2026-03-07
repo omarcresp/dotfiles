@@ -92,8 +92,6 @@ in
   services.kanata.enable = true;
   services.kanata.keyboards.latam.config = builtins.readFile ../../legacy/kanata-linux.cfg;
 
-  services.mullvad-vpn.enable = true;
-
   services.upower.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
@@ -132,8 +130,6 @@ in
     vim
     # TODO: replace with flake. flake is missing darwin support
     # code-cursor
-    mullvad-vpn
-
     ghostty
     obs-studio
     vesktop
