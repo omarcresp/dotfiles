@@ -50,6 +50,7 @@ in
     rofi
     bluez
     rofi-bluetooth
+    xdg-desktop-portal-gtk
     pavucontrol
     pulseaudioFull
     light
