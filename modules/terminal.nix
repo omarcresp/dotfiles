@@ -61,6 +61,21 @@
     tmux.enableShellIntegration = true;
   };
 
+  programs.nnn = {
+    enable = true;
+    package = pkgs.nnn.override ({ withNerdIcons = true; });
+    plugins = {
+      src = "${pkgs.nnn}/share/plugins";
+      mappings = {
+        p = "preview-tui";
+        f = "finder";
+      };
+    };
+    extraPackages = with pkgs; [
+      ffmpegthumbnailer
+    ];
+  };
+
   programs.sesh = {
     enable = true;
     tmuxKey = "p";

@@ -13,7 +13,7 @@
 - `hosts/mbp/` contains macOS (nix-darwin) configs.
 - `modules/` contains shared home-manager modules.
 - `legacy/` holds shell scripts and config snippets.
-- `modules/hyprland.nix` manages Wayland configuration.
+- `modules/cosmic.nix` manages COSMIC shortcut overrides.
 - `modules/terminal.nix` owns shell and tmux setup.
 
 ## Build / apply (system)

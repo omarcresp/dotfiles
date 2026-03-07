@@ -48,10 +48,12 @@ in
     LC_TIME = "es_CO.UTF-8";
   };
 
-  programs.hyprland = {
+  services.displayManager.cosmic-greeter.enable = true;
+  services.desktopManager.cosmic = {
     enable = true;
     xwayland.enable = true;
   };
+  services.xserver.xkb.layout = "latam";
 
   # Screen bright patch
   services.udev.extraRules = ''
@@ -80,7 +82,7 @@ in
   services.upower.enable = true;
 
   services.gnome.gnome-keyring.enable = true;
-  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   virtualisation.docker = {
     enable = true;
@@ -111,40 +113,20 @@ in
     };
   };
 
-  services.getty.autologinUser = user;
-  environment.loginShellInit = ''
-    if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-      exec start-hyprland
-    fi
-  '';
-
   environment.systemPackages = with pkgs; [
     vim
     # TODO: replace with flake. flake is missing darwin support
     # code-cursor
     mullvad-vpn
 
-    nautilus
     ghostty
     obs-studio
     vesktop
     # anydesk
 
-    # Wayland
-    libsForQt5.qt5.qtwayland
-    libnotify
-    swww
-
     inputs.zen-browser.packages."${system}".default
     google-chrome
-    inputs.ulauncher.packages."${system}".default
     inputs.cursor.packages."${system}".default
-  ];
-
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [
-    pkgs.xdg-desktop-portal-gtk
-    pkgs.xdg-desktop-portal-hyprland
   ];
 
   hardware.bluetooth.enable = true;

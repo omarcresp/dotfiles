@@ -46,7 +46,7 @@
   fonts.fontconfig.enable = true;
 
   imports = [
-    ../../modules/hyprland.nix
+    ../../modules/cosmic.nix
     ../../modules/terminal.nix
     ../../modules/development.nix
   ];
