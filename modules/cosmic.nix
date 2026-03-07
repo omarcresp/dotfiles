@@ -11,6 +11,15 @@
 
   xdg.configFile."cosmic/com.system76.CosmicComp/v1/autotile".text = "true";
   xdg.configFile."cosmic/com.system76.CosmicComp/v1/autotile_behavior".text = "Global";
+  xdg.configFile."cosmic/com.system76.CosmicComp/v1/input_touchpad".text = ''
+    (state:Enabled,click_method:Some(Clickfinger),scroll_config:Some((method:Some(TwoFinger),natural_scroll:Some(true),scroll_button:None,scroll_factor:None)),tap_config:Some((enabled:true,button_map:Some(LeftRightMiddle),drag:true,drag_lock:false)))
+  '';
+  xdg.configFile."cosmic/com.system76.CosmicComp/v1/workspaces".text = ''
+    (
+      workspace_layout: Horizontal,
+      action_on_typing: None,
+    )
+  '';
 
   xdg.configFile."cosmic/com.system76.CosmicPanel.Dock/v1/plugins_center".text = ''
     Some([
