@@ -30,10 +30,6 @@ in
 
   programs.git.signing.signer = pkgs.lib.getExe' pkgs._1password-gui "op-ssh-sign";
 
-  home.file = {
-    ".ssh/config".source = ../../legacy/ssh-config-nixos;
-  };
-
   home.packages = [
     pkgs.zelda64recomp
     pkgs.prismlauncher

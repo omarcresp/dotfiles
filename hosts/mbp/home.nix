@@ -10,12 +10,10 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles";
+    SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
   };
 
   programs.git.signing.signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
-  home.file = {
-    ".ssh/config".source = ../../legacy/ssh-config-macos;
-  };
 
   programs.fish.shellInit = ''
     source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
