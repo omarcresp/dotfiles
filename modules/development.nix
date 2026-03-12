@@ -30,6 +30,7 @@ in
     postgresql
 
     lazydocker
+    gh
     lazygit
     tokei
     jq

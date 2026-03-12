@@ -26,6 +26,7 @@
     '';
     shellInit = ''
       fish_add_path $HOME/.local/bin
+      fish_add_path /usr/local/bin
     '';
     shellAliases = {
       jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES";
