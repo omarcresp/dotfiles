@@ -15,6 +15,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles";
+    SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
 
     ANTHROPIC_API_KEY = "";
     TAVILY_API_KEY = "";

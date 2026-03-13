@@ -1,4 +1,10 @@
-{ pkgs, sysRebuildCmd, user, ... }:
+{
+  config,
+  pkgs,
+  sysRebuildCmd,
+  user,
+  ...
+}:
 {
   home.packages = with pkgs; [
     zsh
@@ -27,6 +33,10 @@
     shellInit = ''
       fish_add_path $HOME/.local/bin
       fish_add_path /usr/local/bin
+    ''
+    + pkgs.lib.optionalString (config.home.sessionVariables ? SSH_AUTH_SOCK) ''
+      # Prefer the configured SSH agent over gcr/gnome-keyring when launching fish from a GUI session.
+      set -gx SSH_AUTH_SOCK "${config.home.sessionVariables.SSH_AUTH_SOCK}"
     '';
     shellAliases = {
       jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES";
@@ -34,6 +44,7 @@
       jn-clean = "sudo nix-collect-garbage -d";
 
       chrome = "google-chrome-stable";
+      lg = "lazygit";
 
       # AI coding assistants
       cc = "nix run github:sadjow/claude-code-nix";
