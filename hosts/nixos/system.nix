@@ -47,7 +47,10 @@ in
     }
   ];
 
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    plugins = [ pkgs.networkmanager-openvpn ];
+  };
 
   time.timeZone = "America/Bogota";
   i18n.defaultLocale = "en_US.UTF-8";

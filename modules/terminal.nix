@@ -135,8 +135,8 @@
       }
     ];
     extraConfig = ''
-       # Ensure nix paths are available in run-shell commands
-       set-environment -g PATH "/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+       # Ensure wrapper-backed system commands like sudo resolve correctly in tmux.
+       set-environment -g PATH "/run/wrappers/bin:/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
        # Truecolor support
        set -as terminal-overrides ",*:RGB"
