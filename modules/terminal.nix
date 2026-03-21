@@ -12,6 +12,8 @@
     btop
     fastfetch
     dust
+    duf
+    glow
     nerd-fonts.jetbrains-mono
     zip
     unzip
@@ -43,6 +45,12 @@
       jn-update = "nix flake update --flake $JN_DOTFILES";
       jn-clean = "sudo nix-collect-garbage -d";
 
+      cat = "bat";
+      ls = "eza";
+      ll = "eza -l";
+      la = "eza -la";
+      tree = "eza --tree";
+
       chrome = "google-chrome-stable";
       lg = "lazygit";
 
@@ -66,6 +74,20 @@
     enableBashIntegration = true;
     enableFishIntegration = true;
     enableZshIntegration = true;
+  };
+
+  programs.bat = {
+    enable = true;
+  };
+
+  programs.eza = {
+    enable = true;
+    icons = "auto";
+    git = true;
+  };
+
+  programs.fd = {
+    enable = true;
   };
 
   programs.fzf = {

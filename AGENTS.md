@@ -1,7 +1,6 @@
 # AGENTS
 
 ## Scope
-- Applies to the entire repository.
 - Repo is a Nix flake for NixOS + nix-darwin + home-manager.
 - Primary languages: Nix, shell (bash/zsh/fish).
 - Keep changes minimal and consistent with existing module patterns.
@@ -122,10 +121,6 @@
 - Add comments only when behavior is non-obvious.
 - Do not introduce new tooling without approval.
 
-## Cursor / Copilot rules
-- No `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md` found.
-- If any are added later, summarize and mirror the rules here.
-
 ## Notes for agents
 - This repo is personal dotfiles; be cautious with changes.
 - Prefer asking before altering global defaults.
@@ -145,5 +140,3 @@
 ## Final reminder
 - Update this file if workflows or commands change.
 - Keep guidance accurate and avoid speculation.
-
-<!-- End of AGENTS.md -->

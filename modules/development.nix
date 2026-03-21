@@ -35,6 +35,7 @@ in
     tokei
     jq
     code2prompt
+    delta
     docker-compose
 
     # Rust
@@ -80,6 +81,13 @@ in
         email = "crespomerchano@gmail.com";
         name = "Omar Crespo";
       };
+      core.pager = "delta";
+      interactive.diffFilter = "delta --color-only";
+      delta = {
+        navigate = true;
+        side-by-side = true;
+      };
+      merge.conflictstyle = "zdiff3";
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
     };
