@@ -12,6 +12,9 @@
     mac-app-util.url = "github:hraban/mac-app-util";
     mac-app-util.inputs.cl-nix-lite.url = "github:r4v3n6101/cl-nix-lite/url-fix";
 
+    yt-x.url = "github:Benexl/yt-x";
+    yt-x.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 

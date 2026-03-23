@@ -115,6 +115,8 @@ in
     gamescopeSession.enable = true;
   };
 
+  programs.gamemode.enable = true;
+
   programs.nix-ld.enable = true;
 
   programs._1password-gui.polkitPolicyOwners = [ user ];
@@ -131,15 +133,16 @@ in
 
   environment.systemPackages = with pkgs; [
     vim
-    # TODO: replace with flake. flake is missing darwin support
-    # code-cursor
     ghostty
     obs-studio
     vesktop
-    # anydesk
+    google-chrome
+
+    yt-dlp
+    chafa
 
     inputs.zen-browser.packages."${system}".default
-    google-chrome
+    inputs.yt-x.packages."${system}".default
     inputs.cursor.packages."${system}".default
   ];
 

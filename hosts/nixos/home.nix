@@ -31,6 +31,7 @@
   home.packages = [
     pkgs.zelda64recomp
     pkgs.prismlauncher
+    pkgs.temurin-bin-21
   ];
 
   home.pointerCursor = {
@@ -47,6 +48,16 @@
     ../../modules/terminal.nix
     ../../modules/development.nix
   ];
+
+  programs.mpv = {
+    enable = true;
+    config = {
+      osc = false;
+      osd-bar = false;
+      osd-level = 0;
+      border = false;
+    };
+  };
 
   programs.home-manager.enable = true;
 }
