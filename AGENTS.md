@@ -30,6 +30,7 @@
 - Single check: `nix build .#checks.<system>.<check-name>`.
 - Discover check names: `nix flake show --all-systems`.
 - If no checks exist, there are no automated tests.
+- NEVER build the whole config unless explicitly ask for
 
 ## Lint / formatting
 - No formatter configured in `flake.nix`.

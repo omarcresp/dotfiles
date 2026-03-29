@@ -12,6 +12,14 @@ in
     "nix-command"
     "flakes"
   ];
+  nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+
+  boot.loader.systemd-boot.configurationLimit = 5;
   system.stateVersion = "24.05";
 
   boot.loader.systemd-boot.enable = true;
@@ -133,13 +141,17 @@ in
 
   environment.systemPackages = with pkgs; [
     vim
+    bubblewrap
     ghostty
     obs-studio
     vesktop
     google-chrome
 
     yt-dlp
-    chafa
+    kitty
+    (chafa.overrideAttrs (old: {
+      buildInputs = old.buildInputs ++ [ libwebp ];
+    }))
 
     inputs.zen-browser.packages."${system}".default
     inputs.yt-x.packages."${system}".default

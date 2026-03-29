@@ -54,6 +54,8 @@
       chrome = "google-chrome-stable";
       lg = "lazygit";
 
+      jn-vh = ''prismlauncher -l "Wold's Vaults - Vault Hunters Expansion"'';
+
       # AI coding assistants
       cc = "nix run github:sadjow/claude-code-nix";
       co = "nix run github:sadjow/codex-nix";
@@ -162,6 +164,11 @@
 
        # Truecolor support
        set -as terminal-overrides ",*:RGB"
+
+       # Allow image protocols (kitty graphics) to pass through to the outer terminal
+       set -g allow-passthrough on
+       set -ga update-environment TERM
+       set -ga update-environment TERM_PROGRAM
 
        set -s escape-time 0
        set -g mouse on

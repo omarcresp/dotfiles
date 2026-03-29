@@ -52,10 +52,33 @@
   programs.mpv = {
     enable = true;
     config = {
+      # Hide UI
       osc = false;
       osd-bar = false;
       osd-level = 0;
       border = false;
+      fs = true;
+
+      hwdec = "auto-safe";
+      hwdec-codecs = "h264,vc1,hevc,vp8,vp9,prores";
+      vo = "gpu-next";
+      msg-level = "ffmpeg=error";
+
+      # Disable post-processing
+      deband = false;
+      dither-depth = "no";
+      interpolation = false;
+
+      # Fastest scalers
+      scale = "bilinear";
+      dscale = "bilinear";
+      cscale = "bilinear";
+
+      # Limit buffer to save RAM
+      demuxer-max-bytes = "30M";
+      demuxer-max-back-bytes = "12M";
+
+      ytdl-format = "bestvideo[height<=?1440][vcodec~='^(avc|h264)']+bestaudio/bestvideo[height<=?1440]+bestaudio/best";
     };
   };
 
