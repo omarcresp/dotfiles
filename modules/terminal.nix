@@ -57,9 +57,7 @@
       jn-vh = ''prismlauncher -l "Wold's Vaults - Vault Hunters Expansion"'';
 
       # AI coding assistants
-      cc = "nix run github:sadjow/claude-code-nix";
-      co = "nix run github:sadjow/codex-nix";
-      oc = "npx opencode-ai";
+      codex-yane = "CODEX_HOME=~/.codex-yane codex";
     };
   };
 
@@ -117,14 +115,39 @@
     tmuxKey = "p";
     settings = {
       window = [
-        { name = "nvim"; startup_command = "nvim"; }
-        { name = "claude"; startup_command = "nix run github:sadjow/claude-code-nix"; }
-        { name = "lazygit"; startup_command = "lazygit"; }
+        {
+          name = "nvim";
+          startup_command = "nvim";
+        }
+        {
+          name = "claude";
+          startup_command = "nix run github:sadjow/claude-code-nix";
+        }
+        {
+          name = "lazygit";
+          startup_command = "lazygit";
+        }
         { name = "terminal"; }
       ];
       wildcard = [
-        { pattern = "~/Programming/*"; windows = [ "nvim" "claude" "lazygit" "terminal" ]; }
-        { pattern = "~/Programming/*/*"; windows = [ "nvim" "claude" "lazygit" "terminal" ]; }
+        {
+          pattern = "~/Programming/*";
+          windows = [
+            "nvim"
+            "claude"
+            "lazygit"
+            "terminal"
+          ];
+        }
+        {
+          pattern = "~/Programming/*/*";
+          windows = [
+            "nvim"
+            "claude"
+            "lazygit"
+            "terminal"
+          ];
+        }
       ];
       session = [
         {

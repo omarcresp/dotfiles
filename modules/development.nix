@@ -6,6 +6,7 @@ let
   claude-code = inputs.claude-code.packages."${system}".default;
   codex = inputs.codex.packages."${system}".default;
   t3code = inputs.t3code-flake.packages."${system}".t3-code;
+  copilot-cli = inputs.copilot-cli.packages."${system}".default;
 in
 {
   home.packages = with pkgs; [
@@ -24,6 +25,7 @@ in
     codex
     t3code
     opencode
+    copilot-cli
     # flyctl
     # wrangler
     # redis
@@ -49,9 +51,10 @@ in
 
     # Python
     uv
+    python3
 
     # Javascript
-    nodejs
+    nodejs_22
     bun
     deno
     pnpm

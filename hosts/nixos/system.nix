@@ -24,6 +24,9 @@ in
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernel.sysctl = {
+    "vm.max_map_count" = 262144;
+  };
 
   networking.hostName = "nixos-${user}"; # Define your hostname.
   users.users.${user} = {
@@ -147,8 +150,9 @@ in
     vesktop
     google-chrome
 
-    yt-dlp
+    upwork
     kitty
+    mono
     (chafa.overrideAttrs (old: {
       buildInputs = old.buildInputs ++ [ libwebp ];
     }))

@@ -39,6 +39,9 @@
 
     t3code-flake.url = "github:omarcresp/t3code-flake";
     t3code-flake.inputs.nixpkgs.follows = "nixpkgs";
+
+    copilot-cli.url = "github:scarisey/copilot-cli-flake";
+    copilot-cli.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

@@ -31,7 +31,7 @@
   home.packages = [
     pkgs.zelda64recomp
     pkgs.prismlauncher
-    pkgs.temurin-bin-21
+    pkgs.temurin-bin-25
   ];
 
   home.pointerCursor = {
