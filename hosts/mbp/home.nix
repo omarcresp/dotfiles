@@ -3,6 +3,7 @@
   home.username = user;
   home.homeDirectory = "/Users/${user}";
   home.stateVersion = "24.05";
+  home.enableNixpkgsReleaseCheck = false;
 
   _module.args.inputs = inputs;
   _module.args.sysRebuildCmd = "darwin-rebuild";
