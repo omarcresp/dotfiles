@@ -124,6 +124,14 @@ in
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     gamescopeSession.enable = true;
+    package = pkgs.steam.override {
+      extraLibraries =
+        p:
+        pkgs.lib.optionals p.stdenv.hostPlatform.is64bit [
+          p.llvmPackages.libcxx
+          p.llvmPackages.libunwind
+        ];
+    };
   };
 
   programs.gamemode.enable = true;
@@ -144,13 +152,10 @@ in
 
   environment.systemPackages = with pkgs; [
     vim
-    bubblewrap
     ghostty
     obs-studio
     vesktop
-    google-chrome
 
-    upwork
     kitty
     mono
     (chafa.overrideAttrs (old: {
