@@ -108,6 +108,9 @@ in
 
   services.upower.enable = true;
 
+  services.tailscale.enable = true;
+  services.tailscale.openFirewall = true;
+
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.greetd.enableGnomeKeyring = true;
 
