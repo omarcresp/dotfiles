@@ -10,7 +10,6 @@
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
     mac-app-util.url = "github:hraban/mac-app-util";
-    mac-app-util.inputs.cl-nix-lite.url = "github:r4v3n6101/cl-nix-lite/url-fix";
 
     yt-x.url = "github:Benexl/yt-x";
     yt-x.inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +33,7 @@
     claude-code.url = "github:sadjow/claude-code-nix";
     claude-code.inputs.nixpkgs.follows = "nixpkgs";
 
-    codex.url = "github:sadjow/codex-nix";
+    codex.url = "github:sadjow/codex-cli-nix";
     codex.inputs.nixpkgs.follows = "nixpkgs";
 
     t3code-flake.url = "github:omarcresp/t3code-flake";
