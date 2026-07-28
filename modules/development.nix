@@ -7,6 +7,7 @@ let
   codex = inputs.codex.packages."${system}".default;
   t3code = inputs.t3code-flake.packages."${system}".t3-code-nightly;
   copilot-cli = inputs.copilot-cli.packages."${system}".default;
+  vite-plus = pkgs.callPackage ../packages/vite-plus.nix { };
 in
 {
   home.packages = with pkgs; [
@@ -54,7 +55,8 @@ in
     python3
 
     # Javascript
-    nodejs_22
+    nodejs_24
+    vite-plus
     bun
     deno
     pnpm
