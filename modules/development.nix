@@ -5,7 +5,7 @@ let
   jnvim = inputs.jack-nixvim.packages."${system}".default;
   claude-code = inputs.claude-code.packages."${system}".default;
   codex = inputs.codex.packages."${system}".default;
-  t3code = inputs.t3code-flake.packages."${system}".t3-code;
+  t3code = inputs.t3code-flake.packages."${system}".t3-code-nightly;
   copilot-cli = inputs.copilot-cli.packages."${system}".default;
 in
 {
