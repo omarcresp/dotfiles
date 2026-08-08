@@ -66,11 +66,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786203977,
-        "narHash": "sha256-uAiAQOJkio8w27Y9iTTDDR06XsFhi0ZdP1DfMFC/Ny0=",
+        "lastModified": 1786204486,
+        "narHash": "sha256-RrYtvTnQRTDF4wHvrsbT9a/AAa8xXPMu1uQeS9VRrh0=",
         "owner": "omarcresp",
         "repo": "cliproxyapi-flake",
-        "rev": "04a79b53f9fc87fae31e17ffc1e34a3bba7c0b40",
+        "rev": "332cb0846d6892738d24701808a3ee51c111e072",
         "type": "github"
       },
       "original": {
