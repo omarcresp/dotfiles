@@ -41,6 +41,9 @@
 
     copilot-cli.url = "github:scarisey/copilot-cli-flake";
     copilot-cli.inputs.nixpkgs.follows = "nixpkgs";
+
+    cliproxyapi.url = "github:omarcresp/cliproxyapi-flake";
+    cliproxyapi.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =

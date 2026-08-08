@@ -45,6 +45,7 @@
   imports = [
     ../../modules/terminal.nix
     ../../modules/development.nix
+    ../../modules/cliproxyapi.nix
   ];
 
   programs.home-manager.enable = true;

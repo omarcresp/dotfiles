@@ -58,6 +58,20 @@
 
       # AI coding assistants
       codex-yane = "CODEX_HOME=~/.codex-yane codex";
+    }
+    # CLIProxyAPI only runs on the MacBook. Its config and auth store are
+    # mutable state owned by the Management Center, so these reach for the live
+    # files rather than anything in the store.
+    // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+      # OAuth enrollment writes into the auth-dir named by the config file, and
+      # the binary defaults to ./config.yaml -- so always name the real one, or
+      # credentials land in a directory the service never reads.
+      jn-cpa-login = "cliproxyapi -config ~/.cli-proxy-api/config.yaml";
+      jn-cpa-panel = "open http://127.0.0.1:8317/management.html";
+      jn-cpa-key = "/usr/local/bin/op read op://Personal/cliproxyapi/secret-key";
+      jn-cpa-log = "tail -f ~/.cli-proxy-api/logs/cliproxyapi.error.log";
+      jn-cpa-config = "$EDITOR ~/.cli-proxy-api/config.yaml";
+      jn-cpa-restart = "launchctl kickstart -k gui/$UID/org.nix-community.home.cliproxyapi";
     };
   };
 
