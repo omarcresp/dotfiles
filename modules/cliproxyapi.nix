@@ -84,7 +84,7 @@ in
       debug = false;
 
       remote-management = {
-        allow-remote = false;
+        allow-remote = true;
         disable-control-panel = false;
         disable-auto-update-panel = true;
       };
