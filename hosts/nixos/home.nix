@@ -48,6 +48,7 @@
     ../../modules/cosmic.nix
     ../../modules/terminal.nix
     ../../modules/development.nix
+    ../../modules/cliproxyapi.nix
   ];
 
   programs.mpv = {

@@ -6,9 +6,15 @@
   ...
 }:
 let
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   port = 8317;
-  baseUrl = "http://127.0.0.1:${toString port}";
-  opRead = ref: "/usr/local/bin/op read op://Personal/cliproxyapi/${ref}";
+  baseUrl =
+    if isDarwin then
+      "http://127.0.0.1:${toString port}"
+    else
+      "http://omars-macbook-pro:${toString port}";
+  opCommand = if isDarwin then "/usr/local/bin/op" else "/run/wrappers/bin/op";
+  opRead = ref: "${opCommand} read op://Personal/cliproxyapi/${ref}";
 
   # Both client configs are rewritten by their own tools, so patch only the keys
   # we own and leave the rest alone.
@@ -74,7 +80,9 @@ in
     run ${lib.getExe routeClients}
   '';
 
-  services.cliproxyapi = {
+  # The MacBook is the server. Other hosts import this module only to route
+  # their local clients to the server through Tailscale.
+  services.cliproxyapi = lib.mkIf isDarwin {
     enable = true;
 
     settings = {
