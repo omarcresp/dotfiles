@@ -1,4 +1,7 @@
-{ user, inputs, ... }:
+{ config, user, inputs, ... }:
+let
+  androidSdk = "${config.home.homeDirectory}/Library/Android/sdk";
+in
 {
   home.username = user;
   home.homeDirectory = "/Users/${user}";
@@ -9,10 +12,16 @@
   _module.args.sysRebuildCmd = "darwin-rebuild";
 
   home.sessionVariables = {
+    ANDROID_HOME = androidSdk;
     EDITOR = "nvim";
     JN_DOTFILES = "$HOME/.config/dotfiles";
     SSH_AUTH_SOCK = "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
   };
+
+  home.sessionPath = [
+    "${androidSdk}/emulator"
+    "${androidSdk}/platform-tools"
+  ];
 
   programs.git.signing.signer = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
 
