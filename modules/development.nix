@@ -4,9 +4,7 @@ let
   zig-master = inputs.zig.packages."${system}".master;
   jnvim = inputs.jack-nixvim.packages."${system}".default;
   claude-code = inputs.claude-code.packages."${system}".default;
-  codex = pkgs.callPackage ../packages/codex.nix {
-    codex = inputs.codex.packages."${system}".default;
-  };
+  codex = inputs.codex.packages."${system}".default;
   t3code = inputs.t3code-flake.packages."${system}".orchestrator;
   copilot-cli = inputs.copilot-cli.packages."${system}".default;
   vite-plus = pkgs.callPackage ../packages/vite-plus.nix { };
@@ -66,14 +64,7 @@ in
     openssl
 
     zig-master
-  ]
-  # Codex shells out to bwrap for sandboxing on Linux; upstream supplied it
-  # through a wrapper that the repackaged entrypoint can no longer use.
-  ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.bubblewrap ];
-
-  # The repackaged entrypoint is a plain binary rather than a wrapper, so the
-  # updater opt-out has to come from the environment.
-  home.sessionVariables.DISABLE_AUTOUPDATER = "1";
+  ];
 
   programs.ripgrep = {
     enable = true;
