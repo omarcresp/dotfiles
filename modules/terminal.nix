@@ -41,7 +41,10 @@
       set -gx SSH_AUTH_SOCK "${config.home.sessionVariables.SSH_AUTH_SOCK}"
     '';
     shellAliases = {
-      jn-system-switch = "sudo ${sysRebuildCmd} switch --flake $JN_DOTFILES";
+      jn-system-switch =
+        pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isLinux
+          ''nix-store --add-fixed sha256 "$JN_DOTFILES/mm.us.rev1.rom.z64" && ''
+        + ''sudo ${sysRebuildCmd} switch --flake "$JN_DOTFILES"'';
       jn-update = "nix flake update --flake $JN_DOTFILES";
       jn-clean = "sudo nix-collect-garbage -d";
 

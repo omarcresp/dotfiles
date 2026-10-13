@@ -135,6 +135,7 @@
 
 ## Useful environment hints
 - `JN_DOTFILES` is set in Home Manager configs.
+- On Linux, `jn-system-switch` imports `$JN_DOTFILES/mm.us.rev1.rom.z64` with `nix-store --add-fixed sha256` before switching; import failure stops the switch.
 - Default editor is `nvim`.
 - `op-ssh-sign` is used for git signing.
 
