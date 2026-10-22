@@ -71,7 +71,7 @@
       # credentials land in a directory the service never reads.
       jn-cpa-login = "cliproxyapi -config ~/.cli-proxy-api/config.yaml";
       jn-cpa-panel = "open http://127.0.0.1:8317/management.html";
-      jn-cpa-key = "${config.jn.secrets.opCommand} read op://Personal/cliproxyapi/secret-key";
+      jn-cpa-key = "command cat ${pkgs.lib.escapeShellArg config.jn.secrets.files.CLIPROXYAPI_SECRET_KEY}";
       jn-cpa-log = "tail -f ~/.cli-proxy-api/logs/cliproxyapi.error.log";
       jn-cpa-config = "$EDITOR ~/.cli-proxy-api/config.yaml";
       jn-cpa-restart = "launchctl kickstart -k gui/$UID/org.nix-community.home.cliproxyapi";

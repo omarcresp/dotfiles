@@ -36,7 +36,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 18. As the dotfiles owner, I want a host to be able to add host-only entries to the registry, so that a key needed on one machine doesn't spread to the other.
 19. As the dotfiles owner, I want the MacBook and the NixOS host to use the same module, so that behavior is identical apart from paths the platform dictates.
 20. As the dotfiles owner, I want a flake check that evaluates both hosts' home configs, so that I catch a broken registry before a rebuild.
-21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its opnix secret or its fish export, so that the three views of the registry cannot drift apart.
+21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its provisioned file, or its fish export unless the entry sets `export = false`, so that the three views of the registry cannot drift apart.
 22. As the dotfiles owner, I want the flake check to fail if any API key appears in session variables again, so that the empty-key regression cannot return.
 23. As the dotfiles owner, I want the flake check to fail if a registry reference points outside the `Agents` vault, so that the service account is never asked for a value it cannot read.
 24. As the dotfiles owner, I want a `jn-` alias that reports which registered values are present in the current shell (names only, never values), so that I can confirm a machine after a switch.
@@ -51,7 +51,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 - **New flake input.** `opnix` from `brizzbuzz/opnix`, pinned like the other inputs and following `nixpkgs`. Version at the time of writing is v0.11.0.
 - **Home Manager module only.** Use `opnix.homeManagerModules.default` through a new shared module that both hosts import. Do not use the NixOS or nix-darwin system modules. All the secrets are per-user, so the system daemon, the root-owned token in `/etc`, and the `onepassword-secrets` group add setup cost with no benefit.
 - **New shared module.** It is a noun-named module under the shared modules directory. It owns the registry option, the opnix configuration, the token path, and the vault name. It also owns its own fish wiring, the export and the `jn-secrets-check` function, so `terminal.nix` only imports it.
-- **Registry shape.** A custom option `jn.secrets.env` of type attrs-of-string, mapping an env var name to an `op://<vault>/<item>/<field>` reference. The shared module sets the common entries. A host's home config can merge in its own. Every other view derives from this one attrset:
+- **Registry shape.** A custom option `jn.secrets.entries` whose values are a string or `{ reference; export }`, mapping an env var name to an `op://<vault>/<item>/<field>` reference. The shared module sets the common entries. A host's home config can merge in its own. Every other view derives from this one attrset:
   - opnix `programs.onepassword-secrets.secrets`, one entry per env var, `kind = "field"`, mode `0600`, path under a dedicated secrets directory in the user's config dir, with the file named after the env var.
   - The fish export block.
   - The check alias's list of names.
@@ -60,21 +60,21 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 - **Token item per host.** The token item reference is a per-host option that defaults to the shared `Agents service account token`. For now both hosts use the shared token. Giving a machine its own service account later means creating the account, saving its token as a new Personal item, and overriding the option in that host's home config. No module change is needed.
 - **Token file.** It lives in the user's config directory with mode `0600`, and opnix `tokenFile` points at it. No sudo is involved.
 - **Bootstrap alias.** A `jn-secrets-bootstrap` fish alias reads the token item with the desktop `op` and writes the token file with `umask 077`. It reuses the per-platform `op` path logic that the cliproxyapi module already has, hoisted to a shared helper so both modules use one definition.
-- **Fish export.** It goes in fish shell init, not interactive-only init, so non-interactive fish scripts get the values too. For each registry name, it exports the file contents only when the file exists and is non-empty. Values are read at shell start and never interpolated at build time.
+- **Fish export.** It goes in fish shell init, not interactive-only init, so non-interactive fish scripts get the values too. For each registry name, it exports the file contents only when the file exists and has non-whitespace content. Values are read at shell start and never interpolated at build time.
 - **Remove empty keys.** The seven empty `*_API_KEY` entries come out of the NixOS host's session variables.
 - **Activation must not abort.** Upstream opnix's activation fragment calls `exit 0` when the token file is missing and `exit 1` when it is unreadable. HM concatenates activation fragments into one script, so either call can end the whole activation. The implementation must confirm where that fragment lands in the activation DAG relative to `linkGeneration`. If a missing or unreadable token can skip or fail the rest of activation, the shared module must make sure the fragment cannot end activation early. Possible fixes are guarding before it runs or overriding the fragment. The chosen fix gets a one-line comment explaining why.
 - **Fetch timing.** Values refresh on every rebuild. There is no polling daemon and no separate refresh command. A rebuild is the refresh.
-- **cliproxyapi stays as it is.** It keeps reading from the Personal vault through the desktop `op` at activation. Only the `op` path helper moves.
+- **cliproxyapi's keys live in the registry.** Its proxy key and secret key are in `Agents` (`op://Agents/cliproxyapi/{proxy-key,secret-key}`) and registered as entries with `export = false`, so the provisioner fetches them but fish does not export them. An entry is a bare reference or `{ reference; export; }`, and `jn.secrets.files.<NAME>` is its absolute file path. The server config, the client routing script, and `jn-cpa-key` read those files, so the provisioner is the only caller of `op`. The proxy key is registered on both hosts and the secret key on the MacBook, where the server runs.
 - **Flake check (approved new tooling).** Add a `checks` output for each system the hosts use. The check evaluates both host home configurations and fails when:
-  - a registry name has no matching opnix secret, or the reverse;
-  - a registry name is missing from the generated fish init;
+  - a registry entry has no provisioned file;
+  - an entry without `export = false` is missing from the generated fish init;
   - any session variable name ends in `_API_KEY`;
   - a registry reference does not start with `op://Agents/`.
   Evaluating the other OS's configuration must stay eval-only so the check runs on either machine.
 
 ## Testing Decisions
 
-- **What a good test asserts here.** It asserts what the user observes: the evaluated config a rebuild would apply, and the env a new shell has. It does not assert how opnix generates its JSON config or the order of activation fragments, except for the abort behavior above, which is observable.
+- **What a good test asserts here.** It asserts what the user observes: the evaluated config a rebuild would apply, and the env a new shell has. It does not assert how opnix generates its JSON config or the order of activation fragments, except for the abort behavior above and the ordering consumers of the provisioned files depend on, which are observable.
 - **Seam 1 is the flake check.** It is the evaluated home configuration of each host. It runs offline, needs no token, and never sees a secret value. It covers registry consistency, the API-key regression, and the vault prefix rule.
 - **Seam 2 is the post-switch check.** After a real switch, a fresh fish shell runs the check alias and every registered name is present and non-empty. The alias prints names only. This is the only seam that proves the token, the vault permissions, and the fetch work end to end, so it runs on both hosts.
 - **Failure-path checks on a real machine.** Rebuild once with the token file moved aside and confirm that activation completes, HM links are updated, and the last fetched values remain. Then rebuild once with a bogus token and confirm the same.
@@ -82,7 +82,6 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 
 ## Out of Scope
 
-- Migrating cliproxyapi's own keys to `Agents` or to opnix.
 - System-level secrets, the NixOS or nix-darwin opnix daemons, and secret polling.
 - Exporting the values to GUI apps launched by launchd or the desktop session.
 - bash and zsh exports. fish is the shell this repo configures.

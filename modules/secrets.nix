@@ -7,8 +7,16 @@
 let
   cfg = config.jn.secrets;
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  names = lib.attrNames cfg.env;
-  secretPath = name: "$HOME/${cfg.dir}/${name}";
+  names = lib.attrNames cfg.entries;
+  exported = lib.filter (name: cfg.entries.${name}.export) names;
+
+  # Provisioned means non-whitespace content, for the export and the check alike.
+  hasContent = name: ''
+    test -s "${cfg.files.${name}}"; and set -l v (string collect < "${cfg.files.${name}}"); and string match -qr '\S' -- "$v"'';
+
+  provisionedLines = lib.concatMapStringsSep "\n" (
+    name: ''begin; ${hasContent name}; end; and echo "provisioned ${name}"; or echo "unprovisioned ${name}"''
+  ) names;
 
   provision = pkgs.writeShellApplication {
     name = "jn-secrets-provision";
@@ -48,20 +56,49 @@ let
       }
 
       ${lib.concatMapStringsSep "\n" (
-        name: "provision ${name} ${lib.escapeShellArg cfg.env.${name}}"
+        name: "provision ${name} ${lib.escapeShellArg cfg.entries.${name}.reference}"
       ) names}
     '';
   };
 in
 {
   options.jn.secrets = {
-    env = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
+    entries = lib.mkOption {
+      type = lib.types.attrsOf (
+        lib.types.coercedTo lib.types.str (reference: { inherit reference; }) (
+          lib.types.submodule {
+            options = {
+              reference = lib.mkOption {
+                type = lib.types.str;
+                description = "`op://` reference to fetch.";
+              };
+
+              export = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+                description = "Whether fish exports the value as an env var of the same name.";
+              };
+            };
+          }
+        )
+      );
       default = { };
       description = ''
-        Env var name to `op://` reference. Each value is fetched at activation
-        into its own file under `dir` and exported by fish at shell start.
+        Name to `op://` reference, either a bare string or
+        `{ reference; export; }`. Every entry is provisioned at activation into
+        its own file under `dir`, whose path is in `files`. Fish also exports
+        each one at shell start unless `export = false`, in which case only
+        whatever consumes the file sees the value.
       '';
+    };
+
+    # `files` derives from home.homeDirectory and the provisioner from $HOME,
+    # and Home Manager activation refuses to run unless they match (its
+    # SKIP_SANITY_CHECKS escape hatch aside).
+    files = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      readOnly = true;
+      description = "Absolute path of the file holding each registered name.";
     };
 
     opCommand = lib.mkOption {
@@ -70,11 +107,13 @@ in
         if isDarwin then "/usr/local/bin/op" else "/run/wrappers/bin/op"
       }";
       description = ''
-        Desktop `op` invocation for the user's own vaults. With
-        `OP_SERVICE_ACCOUNT_TOKEN` exported, `op` would otherwise switch to the
-        service account, which cannot read the Personal vault. Hosts have no
-        reason to set it; the flake check overrides it with a stub `op` to
-        exercise the provisioner.
+        Desktop `op` invocation for the user's own vaults. The token is stripped
+        so the provisioner always reads through the user's desktop session,
+        including when it refreshes the token itself; with it exported, `op`
+        would switch to the service account, which cannot read the Personal
+        vault. The provisioner is its only caller. Hosts have no reason to set
+        it; the flake check overrides it with a stub `op` to exercise the
+        provisioner.
       '';
     };
 
@@ -97,13 +136,14 @@ in
     assertions = [
       {
         assertion = lib.all (name: builtins.match "[A-Za-z_][A-Za-z0-9_]*" name != null) names;
-        message = "jn.secrets.env names are interpolated into shell code and must be plain identifiers.";
+        message = "jn.secrets.entries names are interpolated into shell code and must be plain identifiers.";
       }
     ];
 
     jn.secrets = {
-      env.OP_SERVICE_ACCOUNT_TOKEN = lib.mkDefault "op://Agents/Agents service account token/password";
+      entries.OP_SERVICE_ACCOUNT_TOKEN = lib.mkDefault "op://Agents/Agents service account token/password";
       dir = ".config/jn/secrets";
+      files = lib.genAttrs names (name: "${config.home.homeDirectory}/${cfg.dir}/${name}");
       provisioner = provision;
     };
 
@@ -114,18 +154,19 @@ in
 
     # Only a file with non-blank content is exported, so an unprovisioned name never shadows a tool's own auth.
     programs.fish.shellInit = lib.concatMapStringsSep "\n" (name: ''
-      test -s "${secretPath name}"; and set -l v (string collect < "${secretPath name}"); and string match -qr '\S' -- "$v"; and set -gx ${name} $v
-    '') names;
+      ${hasContent name}; and set -gx ${name} $v
+    '') exported;
 
     # A function rather than an alias: fish appends $argv to an alias body, which breaks a loop.
     programs.fish.functions.jn-secrets-check = ''
-      for name in ${lib.concatStringsSep " " names}
+      for name in ${lib.concatStringsSep " " exported}
         if test -n "$$name"
           echo "present $name"
         else
           echo "missing $name"
         end
       end
+      ${provisionedLines}
     '';
   };
 }

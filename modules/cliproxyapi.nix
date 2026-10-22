@@ -13,7 +13,8 @@ let
       "http://127.0.0.1:${toString port}"
     else
       "http://omars-macbook-pro:${toString port}";
-  opRead = ref: "${config.jn.secrets.opCommand} read op://Personal/cliproxyapi/${ref}";
+  files = config.jn.secrets.files;
+  catCommand = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg files.${name}}";
 
   # Both client configs are rewritten by their own tools, so patch only the keys
   # we own and leave the rest alone.
@@ -27,8 +28,8 @@ let
       claude_settings="${config.home.homeDirectory}/.claude/settings.json"
       codex_config="${config.home.homeDirectory}/.codex/config.toml"
 
-      token="$(${opRead "proxy-key"} 2>/dev/null || true)"
-      if [ -z "$token" ]; then
+      token="$(${catCommand "CLIPROXYAPI_PROXY_KEY"} 2>/dev/null || true)"
+      if [ -z "''${token//[[:space:]]/}" ]; then
         echo "cliproxyapi: WARNING could not read the proxy key; leaving client configs alone." >&2
         exit 0
       fi
@@ -75,9 +76,35 @@ let
   };
 in
 {
-  home.activation.cliproxyapiRouteClients = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  jn.secrets.entries = {
+    CLIPROXYAPI_PROXY_KEY = {
+      reference = "op://Agents/cliproxyapi/proxy-key";
+      export = false;
+    };
+  }
+  // lib.optionalAttrs isDarwin {
+    CLIPROXYAPI_SECRET_KEY = {
+      reference = "op://Agents/cliproxyapi/secret-key";
+      export = false;
+    };
+  };
+
+  home.activation.cliproxyapiRouteClients = lib.hm.dag.entryAfter [
+    "writeBoundary"
+    "jnSecrets"
+  ] ''
     run ${lib.getExe routeClients}
   '';
+
+  # Upstream seeds its config from the key files, so they must exist first. The
+  # entry's `after` list merges with upstream's. A DAG entry needs `data` to be
+  # read as an entry, so the placeholder yields to upstream's; the flake check
+  # asserts upstream's data is the seed, so a rename cannot leave a silent no-op.
+  home.activation.cliproxyapi = lib.mkIf config.services.cliproxyapi.enable {
+    data = lib.mkDefault "";
+    after = [ "jnSecrets" ];
+    before = [ ];
+  };
 
   # The MacBook is the server. Other hosts import this module only to route
   # their local clients to the server through Tailscale.
@@ -98,8 +125,8 @@ in
     };
 
     # Read at activation so neither key reaches the Nix store.
-    secretKeyCommand = opRead "secret-key";
-    apiKeyCommand = opRead "proxy-key";
+    secretKeyCommand = catCommand "CLIPROXYAPI_SECRET_KEY";
+    apiKeyCommand = catCommand "CLIPROXYAPI_PROXY_KEY";
 
     tailscaleServePort = port;
   };

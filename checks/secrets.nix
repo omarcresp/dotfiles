@@ -19,26 +19,6 @@ let
 
   real = homeOf host;
 
-  # Reads whose callers must strip the service account token. Each must exist on darwin.
-  opCallers = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-    [
-      "services"
-      "cliproxyapi"
-      "secretKeyCommand"
-    ]
-    [
-      "services"
-      "cliproxyapi"
-      "apiKeyCommand"
-    ]
-    [
-      "programs"
-      "fish"
-      "shellAliases"
-      "jn-cpa-key"
-    ]
-  ];
-
   # Stand-in for `op`: prints a value derived from the reference, or fails on demand.
   # STUB_BLANK makes a read succeed with only whitespace.
   # STUB_LOCK names a directory to make read-only mid-read, to break the write.
@@ -57,31 +37,127 @@ let
     printf 'value-for-%s\n' "$2"
   '';
 
-  # Registered test names: files that hold nothing usable, and one with no file at all.
+  token = "dummy-token";
+
+  # Registered test names: files that hold nothing usable, one with no file at all,
+  # and one that is provisioned but opts out of the export.
   unusable = {
     JN_CHECK_EMPTY = "";
     JN_CHECK_BLANK = "\n";
     JN_CHECK_SPACES = "  \n";
   };
 
+  # The variant's home, so fish reads the files it would read for real, from `files`.
+  fishHome = pkgs.runCommand "secrets-fish-home" { } ''
+    dir="$out/${real.jn.secrets.dir}"
+    mkdir -p "$dir"
+    printf '%s\n' '${token}' > "$dir/OP_SERVICE_ACCOUNT_TOKEN"
+    ${lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        name: content: "printf '%s' ${lib.escapeShellArg content} > \"$dir/${name}\""
+      ) unusable
+    )}
+    printf '%s\n' hidden-value > "$dir/JN_CHECK_HIDDEN"
+  '';
+
   variant = homeOf (host.extendModules {
     modules = [
       {
-        home-manager.users.${user}.jn.secrets = {
-          opCommand = "${opStub}";
-          env = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
-            JN_CHECK_MISSING = "op://Agents/check/missing";
+        home-manager.users.${user} = {
+          home.homeDirectory = lib.mkForce "${fishHome}";
+
+          jn.secrets = {
+            opCommand = "${opStub}";
+            entries = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
+              JN_CHECK_MISSING = "op://Agents/check/missing";
+              JN_CHECK_HIDDEN = {
+                reference = "op://Agents/check/hidden";
+                export = false;
+              };
+            };
           };
         };
       }
     ];
   });
 
+  activation = real.home.activation;
+  sortsCleanly = dag: (real.lib.dag.topoSort dag) ? result;
+
+  # Siblings sort in an arbitrary but stable order, so a plain position check
+  # passes by luck. Ordering is enforced exactly when asking jnSecrets to run
+  # after the consumer makes the graph cyclic.
+  forcedBefore =
+    consumer:
+    sortsCleanly activation
+    && !sortsCleanly (
+      activation
+      // {
+        jnSecrets = activation.jnSecrets // {
+          after = activation.jnSecrets.after ++ [ consumer ];
+        };
+      }
+    );
+
+  cpa = real.services.cliproxyapi;
+  cpaEnabled = cpa.enable;
+
+  orderedAfterSecrets = lib.optional cpaEnabled "cliproxyapi" ++ [ "cliproxyapiRouteClients" ];
+
+  # One ERE for eval and build: op as a word of its own, or either desktop binary.
+  opPattern = lib.concatStringsSep "|" [
+    (lib.escapeRegex real.jn.secrets.opCommand)
+    "(/usr/local/bin|/run/wrappers/bin)/op($|[^[:alnum:]_.-])"
+    "(^|[^[:alnum:]_./-])op[[:space:]]"
+  ];
+  callsOp = text: lib.length (builtins.split opPattern text) > 1;
+
+  # A consumer reads the registered file and never reaches op itself.
+  readsFile = name: command: lib.hasInfix real.jn.secrets.files.${name} command && !callsOp command;
+  fish = real.programs.fish;
+  offenders =
+    lib.mapAttrsToList (name: _: "home.activation.${name}") (
+      lib.filterAttrs (name: entry: name != "jnSecrets" && callsOp entry.data) activation
+    )
+    ++ lib.mapAttrsToList (name: _: "programs.fish.shellAliases.${name}") (
+      lib.filterAttrs (_: callsOp) fish.shellAliases
+    )
+    ++ lib.mapAttrsToList (name: _: "programs.fish.functions.${name}") (
+      lib.filterAttrs (_: callsOp) (lib.mapAttrs (_: f: f.body or f) fish.functions)
+    )
+    ++ lib.optional (callsOp fish.shellInit) "programs.fish.shellInit"
+    ++ lib.optional (callsOp fish.interactiveShellInit) "programs.fish.interactiveShellInit";
+
+  # Generated programs hide their op calls behind a store path, so the build
+  # scans what activation references. The home generation's own outputs are
+  # left out: referencing them would make the check build the whole generation.
+  leadsToGeneration =
+    drv:
+    let
+      name = lib.removeSuffix ".drv" (builtins.substring 33 (-1) (baseNameOf drv));
+    in
+    lib.elem name [
+      "home-manager-files"
+      "home-files"
+      "home-manager-path"
+      "home.path"
+      "home-manager-fonts"
+    ]
+    || lib.hasSuffix ".homemanagerfontsversion" name;
+  withoutGeneration =
+    text:
+    builtins.appendContext (builtins.unsafeDiscardStringContext text) (
+      lib.filterAttrs (drv: _: !leadsToGeneration drv) (builtins.getContext text)
+    );
+  activationTexts = lib.mapAttrsToList (
+    name: entry: pkgs.writeText "activation-${name}" (withoutGeneration entry.data)
+  ) (removeAttrs activation [ "jnSecrets" ]);
+
   secrets = variant.jn.secrets;
-  names = lib.attrNames secrets.env;
-  token = "dummy-token";
+  names = lib.attrNames secrets.entries;
 
   configFish = variant.xdg.configFile."fish/config.fish".source;
+  checkFunction = variant.xdg.configFile."fish/functions/jn-secrets-check.fish".source;
 
   probe = pkgs.writeText "secrets-probe.fish" ''
     function fail
@@ -101,24 +177,52 @@ let
       and fail "$name was exported without usable content"
     end
 
+    set -q JN_CHECK_HIDDEN
+    and fail "JN_CHECK_HIDDEN was exported despite export = false"
+
+    source ${checkFunction}
+    set -l report (jn-secrets-check)
+
+    for line in "present OP_SERVICE_ACCOUNT_TOKEN" "missing JN_CHECK_EMPTY" "missing JN_CHECK_MISSING" "provisioned OP_SERVICE_ACCOUNT_TOKEN" "provisioned JN_CHECK_HIDDEN" "unprovisioned JN_CHECK_EMPTY" "unprovisioned JN_CHECK_BLANK" "unprovisioned JN_CHECK_SPACES" "unprovisioned JN_CHECK_MISSING"
+      contains -- $line $report
+      or fail "jn-secrets-check did not report: $line"
+    end
+
+    for name in ${lib.concatStringsSep " " names}
+      test (count (string match -r -- "^(?:un)?provisioned $name\$" $report)) -eq 1
+      or fail "jn-secrets-check did not report $name exactly once as provisioned or not"
+    end
+
+    string match -q '*hidden-value*' -- $report
+    and fail "jn-secrets-check printed a value"
+
     exit 0
   '';
 in
-assert lib.assertMsg (lib.all (ref: lib.hasPrefix "op://Agents/" ref) (
-  lib.attrValues secrets.env
-)) "every jn.secrets.env reference must live in the Agents vault";
+assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.reference) (
+  lib.attrValues secrets.entries
+)) "every jn.secrets.entries reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
+assert lib.assertMsg (sortsCleanly activation) "home.activation has an ordering cycle";
 assert lib.all (
-  path:
-  let
-    shown = lib.concatStringsSep "." path;
-    value = lib.attrByPath path null real;
-  in
-  lib.assertMsg (
-    lib.isString value && lib.hasPrefix real.jn.secrets.opCommand value
-  ) "${shown} must exist and go through jn.secrets.opCommand"
-) opCallers;
+  consumer:
+  lib.assertMsg (forcedBefore consumer) "home.activation.jnSecrets must run before home.activation.${consumer}"
+) orderedAfterSecrets;
+assert lib.assertMsg (
+  !cpaEnabled || (activation ? cliproxyapi && lib.hasInfix "cliproxyapi-seed" activation.cliproxyapi.data)
+) "home.activation.cliproxyapi is no longer upstream's seed entry; its ordering after jnSecrets has no effect";
+assert lib.assertMsg (
+  !cpaEnabled || readsFile "CLIPROXYAPI_SECRET_KEY" cpa.secretKeyCommand
+) "services.cliproxyapi.secretKeyCommand must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY without calling op";
+assert lib.assertMsg (
+  !cpaEnabled || readsFile "CLIPROXYAPI_PROXY_KEY" cpa.apiKeyCommand
+) "services.cliproxyapi.apiKeyCommand must read jn.secrets.files.CLIPROXYAPI_PROXY_KEY without calling op";
+assert lib.assertMsg (
+  !cpaEnabled || readsFile "CLIPROXYAPI_SECRET_KEY" fish.shellAliases.jn-cpa-key
+) "programs.fish.shellAliases.jn-cpa-key must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY without calling op";
+assert lib.assertMsg (offenders == [ ])
+  "only the provisioner may call op, but these call it too: ${lib.concatStringsSep ", " offenders}";
 pkgs.runCommand "jn-secrets-check-${system}"
   {
     nativeBuildInputs = [ variant.programs.fish.package ];
@@ -129,17 +233,22 @@ pkgs.runCommand "jn-secrets-check-${system}"
       exit 1
     }
 
+    scanned() {
+      grep -aoE '/nix/store/[0-9a-z]{32}-[A-Za-z0-9._+=-]+' "$1" | sort -u
+    }
+    for text in ${lib.escapeShellArgs activationTexts}; do
+      while read -r path; do
+        [ -e "$path" ] || continue
+        hits="$(grep -rIlE -e ${lib.escapeShellArg opPattern} "$path" || true)"
+        [ -z "$hits" ] || fail "only the provisioner may call op, but $path (referenced by $(basename "$text")) does: $hits"
+      done < <(scanned "$text")
+    done
+
     mode() { stat -c %a "$1"; }
 
     # The export is read from the generated config.fish, as a login shell would.
     export HOME="$TMPDIR/fish-home"
-    mkdir -p "$HOME/${secrets.dir}"
-    printf '%s\n' '${token}' > "$HOME/${secrets.dir}/OP_SERVICE_ACCOUNT_TOKEN"
-    ${lib.concatStringsSep "\n" (
-      lib.mapAttrsToList (
-        name: content: "printf '%s' ${lib.escapeShellArg content} > \"$HOME/${secrets.dir}/${name}\""
-      ) unusable
-    )}
+    mkdir -p "$HOME"
     fish --no-config ${probe}
 
     provisioner=${lib.getExe secrets.provisioner}
@@ -155,7 +264,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
     [ "$(mode "$dir")" = 700 ] || fail "secrets dir is not 0700"
     ${lib.concatMapStringsSep "\n" (name: ''
       [ "$(mode "$dir/${name}")" = 600 ] || fail "${name} is not 0600"
-      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.env.${name}}"} ] \
+      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.entries.${name}.reference}"} ] \
         || fail "${name} holds the wrong value"
     '') names}
     [ "$(ls -A "$dir" | wc -l)" -eq ${toString (lib.length names)} ] \
