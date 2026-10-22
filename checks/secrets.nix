@@ -19,7 +19,7 @@ let
 
   real = homeOf host;
 
-  # Reads whose callers must strip the service account token. Each exists only where its module sets it.
+  # Reads whose callers must strip the service account token. Each must exist on darwin.
   opCallers = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
     [
       "services"
@@ -38,9 +38,9 @@ let
       "jn-cpa-key"
     ]
   ];
-  presentCallers = lib.filter (path: lib.hasAttrByPath path real) opCallers;
 
   # Stand-in for `op`: prints a value derived from the reference, or fails on demand.
+  # STUB_BLANK makes a read succeed with only whitespace.
   # STUB_LOCK names a directory to make read-only mid-read, to break the write.
   opStub = pkgs.writeShellScript "op-stub" ''
     [ "$1" = read ] || exit 64
@@ -48,6 +48,10 @@ let
       echo "LEAKED-STDOUT"
       printf 'stub: [ERROR] boom\nsecond line\n' >&2
       exit 1
+    fi
+    if [ -n "''${STUB_BLANK:-}" ]; then
+      printf ' \n\t\n'
+      exit 0
     fi
     [ -z "''${STUB_LOCK:-}" ] || chmod 500 "$STUB_LOCK"
     printf 'value-for-%s\n' "$2"
@@ -105,9 +109,16 @@ assert lib.assertMsg (lib.all (ref: lib.hasPrefix "op://Agents/" ref) (
 )) "every jn.secrets.env reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
-assert lib.assertMsg (lib.all (
-  path: lib.hasPrefix real.jn.secrets.opCommand (lib.getAttrFromPath path real)
-) presentCallers) "every op caller must go through jn.secrets.opCommand";
+assert lib.all (
+  path:
+  let
+    shown = lib.concatStringsSep "." path;
+    value = lib.attrByPath path null real;
+  in
+  lib.assertMsg (
+    lib.isString value && lib.hasPrefix real.jn.secrets.opCommand value
+  ) "${shown} must exist and go through jn.secrets.opCommand"
+) opCallers;
 pkgs.runCommand "jn-secrets-check-${system}"
   {
     nativeBuildInputs = [ variant.programs.fish.package ];
@@ -160,6 +171,12 @@ pkgs.runCommand "jn-secrets-check-${system}"
     ! grep -q 'LEAKED-STDOUT\|second line' "$TMPDIR/warnings" \
       || fail "warning included more than op's first stderr line"
     [ "$(snapshot)" = "$first" ] || fail "failed read changed the secrets dir"
+
+    # (b2) a read that succeeds with only whitespace is a failed read too.
+    STUB_BLANK=1 "$provisioner" 2> "$TMPDIR/warnings" \
+      || fail "provisioner exited nonzero on a blank read"
+    grep -q 'could not read' "$TMPDIR/warnings" || fail "blank read did not warn"
+    [ "$(snapshot)" = "$first" ] || fail "blank read changed the secrets dir"
 
     # (c) a second successful run converges to the same content, modes and file set.
     "$provisioner" || fail "provisioner exited nonzero on a rerun"

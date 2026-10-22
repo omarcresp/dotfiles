@@ -31,7 +31,7 @@ let
         ref="$2"
         tmp=""
 
-        if ! value="$(${cfg.opCommand} read "$ref" 2>"$errfile")" || [ -z "$value" ]; then
+        if ! value="$(${cfg.opCommand} read "$ref" 2>"$errfile")" || [ -z "''${value//[[:space:]]/}" ]; then
           reason="$(head -n 1 "$errfile" || true)"
           echo "secrets: WARNING could not read $name''${reason:+ ($reason)}; keeping the existing value." >&2
           return 0
