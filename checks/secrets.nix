@@ -19,35 +19,6 @@ let
 
   real = homeOf host;
 
-  # Consumers of the registry's files. Each must exist on darwin and name its file.
-  fileReaders = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-    {
-      path = [
-        "services"
-        "cliproxyapi"
-        "secretKeyCommand"
-      ];
-      secret = "CLIPROXYAPI_SECRET_KEY";
-    }
-    {
-      path = [
-        "services"
-        "cliproxyapi"
-        "apiKeyCommand"
-      ];
-      secret = "CLIPROXYAPI_PROXY_KEY";
-    }
-    {
-      path = [
-        "programs"
-        "fish"
-        "shellAliases"
-        "jn-cpa-key"
-      ];
-      secret = "CLIPROXYAPI_SECRET_KEY";
-    }
-  ];
-
   # Stand-in for `op`: prints a value derived from the reference, or fails on demand.
   # STUB_BLANK makes a read succeed with only whitespace.
   # STUB_LOCK names a directory to make read-only mid-read, to break the write.
@@ -110,6 +81,24 @@ let
     ];
   });
 
+  sorted = real.lib.dag.topoSort real.home.activation;
+  order = map (entry: entry.name) sorted.result;
+  indexOf = name: lib.lists.findFirstIndex (candidate: candidate == name) null order;
+
+  # Consumers of the registry's files. The upstream seed entry exists only on darwin.
+  orderedAfterSecrets =
+    lib.optional (pkgs.stdenv.hostPlatform.isDarwin && real.home.activation ? cliproxyapi) "cliproxyapi"
+    ++ [ "cliproxyapiRouteClients" ];
+
+  callsOp = text: lib.hasInfix real.jn.secrets.opCommand text || lib.hasInfix "op read" text;
+  offenders =
+    lib.mapAttrsToList (name: _: "home.activation.${name}") (
+      lib.filterAttrs (name: entry: name != "jnSecrets" && callsOp entry.data) real.home.activation
+    )
+    ++ lib.mapAttrsToList (name: _: "programs.fish.shellAliases.${name}") (
+      lib.filterAttrs (_: callsOp) real.programs.fish.shellAliases
+    );
+
   secrets = variant.jn.secrets;
   names = lib.attrNames secrets.entries;
 
@@ -161,17 +150,17 @@ assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.referen
 )) "every jn.secrets.entries reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
+assert lib.assertMsg (
+  sorted ? result
+) "home.activation has an ordering cycle, so no consumer order can be checked";
 assert lib.all (
-  { path, secret }:
-  let
-    shown = lib.concatStringsSep "." path;
-    value = lib.attrByPath path null real;
-    file = real.jn.secrets.files.${secret};
-  in
+  consumer:
   lib.assertMsg (
-    lib.isString value && lib.hasInfix file value
-  ) "${shown} must exist and read ${file}"
-) fileReaders;
+    indexOf "jnSecrets" != null && indexOf consumer != null && indexOf "jnSecrets" < indexOf consumer
+  ) "home.activation.jnSecrets must run before home.activation.${consumer}"
+) orderedAfterSecrets;
+assert lib.assertMsg (offenders == [ ])
+  "only the provisioner may call op, but these call it too: ${lib.concatStringsSep ", " offenders}";
 pkgs.runCommand "jn-secrets-check-${system}"
   {
     nativeBuildInputs = [ variant.programs.fish.package ];
