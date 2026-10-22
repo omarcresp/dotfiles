@@ -104,7 +104,13 @@ let
 
   orderedAfterSecrets = lib.optional cpaEnabled "cliproxyapi" ++ [ "cliproxyapiRouteClients" ];
 
-  callsOp = text: lib.hasInfix real.jn.secrets.opCommand text || lib.hasInfix "op read" text;
+  # One ERE for eval and build: op as a word of its own, or either desktop binary.
+  opPattern = lib.concatStringsSep "|" [
+    (lib.escapeRegex real.jn.secrets.opCommand)
+    "(/usr/local/bin|/run/wrappers/bin)/op($|[^[:alnum:]_.-])"
+    "(^|[^[:alnum:]_./-])op[[:space:]]"
+  ];
+  callsOp = text: lib.length (builtins.split opPattern text) > 1;
 
   # A consumer reads the registered file and never reaches op itself.
   readsFile = name: command: lib.hasInfix real.jn.secrets.files.${name} command && !callsOp command;
@@ -228,7 +234,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
     for text in ${lib.escapeShellArgs activationTexts}; do
       while read -r path; do
         [ -e "$path" ] && [ "$path" != ${provisionerPath} ] || continue
-        hits="$(grep -rIlF -e 'op read' -e ${lib.escapeShellArg real.jn.secrets.opCommand} "$path" || true)"
+        hits="$(grep -rIlE -e ${lib.escapeShellArg opPattern} "$path" || true)"
         [ -z "$hits" ] || fail "only the provisioner may call op, but $path (referenced by $(basename "$text")) does: $hits"
       done < <(scanned "$text")
     done
