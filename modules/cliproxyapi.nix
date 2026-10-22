@@ -13,8 +13,7 @@ let
       "http://127.0.0.1:${toString port}"
     else
       "http://omars-macbook-pro:${toString port}";
-  opCommand = if isDarwin then "/usr/local/bin/op" else "/run/wrappers/bin/op";
-  opRead = ref: "${opCommand} read op://Personal/cliproxyapi/${ref}";
+  opRead = ref: "${config.jn.secrets.opCommand} read op://Personal/cliproxyapi/${ref}";
 
   # Both client configs are rewritten by their own tools, so patch only the keys
   # we own and leave the rest alone.
