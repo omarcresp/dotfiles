@@ -19,24 +19,33 @@ let
 
   real = homeOf host;
 
-  # Reads whose callers must strip the service account token. Each must exist on darwin.
-  opCallers = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-    [
-      "services"
-      "cliproxyapi"
-      "secretKeyCommand"
-    ]
-    [
-      "services"
-      "cliproxyapi"
-      "apiKeyCommand"
-    ]
-    [
-      "programs"
-      "fish"
-      "shellAliases"
-      "jn-cpa-key"
-    ]
+  # Consumers of the registry's files. Each must exist on darwin and name its file.
+  fileReaders = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+    {
+      path = [
+        "services"
+        "cliproxyapi"
+        "secretKeyCommand"
+      ];
+      secret = "CLIPROXYAPI_SECRET_KEY";
+    }
+    {
+      path = [
+        "services"
+        "cliproxyapi"
+        "apiKeyCommand"
+      ];
+      secret = "CLIPROXYAPI_PROXY_KEY";
+    }
+    {
+      path = [
+        "programs"
+        "fish"
+        "shellAliases"
+        "jn-cpa-key"
+      ];
+      secret = "CLIPROXYAPI_SECRET_KEY";
+    }
   ];
 
   # Stand-in for `op`: prints a value derived from the reference, or fails on demand.
@@ -118,15 +127,16 @@ assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.referen
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
 assert lib.all (
-  path:
+  { path, secret }:
   let
     shown = lib.concatStringsSep "." path;
     value = lib.attrByPath path null real;
+    file = real.jn.secrets.files.${secret};
   in
   lib.assertMsg (
-    lib.isString value && lib.hasPrefix real.jn.secrets.opCommand value
-  ) "${shown} must exist and go through jn.secrets.opCommand"
-) opCallers;
+    lib.isString value && lib.hasInfix file value
+  ) "${shown} must exist and read ${file}"
+) fileReaders;
 pkgs.runCommand "jn-secrets-check-${system}"
   {
     nativeBuildInputs = [ variant.programs.fish.package ];

@@ -13,7 +13,8 @@ let
       "http://127.0.0.1:${toString port}"
     else
       "http://omars-macbook-pro:${toString port}";
-  opRead = ref: "${config.jn.secrets.opCommand} read op://Personal/cliproxyapi/${ref}";
+  files = config.jn.secrets.files;
+  readFile = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg files.${name}}";
 
   # Both client configs are rewritten by their own tools, so patch only the keys
   # we own and leave the rest alone.
@@ -27,8 +28,8 @@ let
       claude_settings="${config.home.homeDirectory}/.claude/settings.json"
       codex_config="${config.home.homeDirectory}/.codex/config.toml"
 
-      token="$(${opRead "proxy-key"} 2>/dev/null || true)"
-      if [ -z "$token" ]; then
+      token="$(${readFile "CLIPROXYAPI_PROXY_KEY"} 2>/dev/null || true)"
+      if [ -z "''${token//[[:space:]]/}" ]; then
         echo "cliproxyapi: WARNING could not read the proxy key; leaving client configs alone." >&2
         exit 0
       fi
@@ -75,9 +76,33 @@ let
   };
 in
 {
-  home.activation.cliproxyapiRouteClients = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  jn.secrets.env = {
+    CLIPROXYAPI_PROXY_KEY = {
+      reference = "op://Agents/cliproxyapi/proxy-key";
+      export = false;
+    };
+  }
+  // lib.optionalAttrs isDarwin {
+    CLIPROXYAPI_SECRET_KEY = {
+      reference = "op://Agents/cliproxyapi/secret-key";
+      export = false;
+    };
+  };
+
+  home.activation.cliproxyapiRouteClients = lib.hm.dag.entryAfter [
+    "writeBoundary"
+    "jnSecrets"
+  ] ''
     run ${lib.getExe routeClients}
   '';
+
+  # Upstream seeds its config from the key files, so they must exist first. The
+  # entry's `after` list merges with upstream's; the placeholder data yields to it.
+  home.activation.cliproxyapi = lib.mkIf isDarwin {
+    data = lib.mkDefault "";
+    after = [ "jnSecrets" ];
+    before = [ ];
+  };
 
   # The MacBook is the server. Other hosts import this module only to route
   # their local clients to the server through Tailscale.
@@ -98,8 +123,8 @@ in
     };
 
     # Read at activation so neither key reaches the Nix store.
-    secretKeyCommand = opRead "secret-key";
-    apiKeyCommand = opRead "proxy-key";
+    secretKeyCommand = readFile "CLIPROXYAPI_SECRET_KEY";
+    apiKeyCommand = readFile "CLIPROXYAPI_PROXY_KEY";
 
     tailscaleServePort = port;
   };
