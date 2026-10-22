@@ -36,7 +36,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 18. As the dotfiles owner, I want a host to be able to add host-only entries to the registry, so that a key needed on one machine doesn't spread to the other.
 19. As the dotfiles owner, I want the MacBook and the NixOS host to use the same module, so that behavior is identical apart from paths the platform dictates.
 20. As the dotfiles owner, I want a flake check that evaluates both hosts' home configs, so that I catch a broken registry before a rebuild.
-21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its opnix secret, or its fish export unless the entry sets `export = false`, so that the three views of the registry cannot drift apart.
+21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its provisioned file, or its fish export unless the entry sets `export = false`, so that the three views of the registry cannot drift apart.
 22. As the dotfiles owner, I want the flake check to fail if any API key appears in session variables again, so that the empty-key regression cannot return.
 23. As the dotfiles owner, I want the flake check to fail if a registry reference points outside the `Agents` vault, so that the service account is never asked for a value it cannot read.
 24. As the dotfiles owner, I want a `jn-` alias that reports which registered values are present in the current shell (names only, never values), so that I can confirm a machine after a switch.
@@ -51,7 +51,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 - **New flake input.** `opnix` from `brizzbuzz/opnix`, pinned like the other inputs and following `nixpkgs`. Version at the time of writing is v0.11.0.
 - **Home Manager module only.** Use `opnix.homeManagerModules.default` through a new shared module that both hosts import. Do not use the NixOS or nix-darwin system modules. All the secrets are per-user, so the system daemon, the root-owned token in `/etc`, and the `onepassword-secrets` group add setup cost with no benefit.
 - **New shared module.** It is a noun-named module under the shared modules directory. It owns the registry option, the opnix configuration, the token path, and the vault name. It also owns its own fish wiring, the export and the `jn-secrets-check` function, so `terminal.nix` only imports it.
-- **Registry shape.** A custom option `jn.secrets.entries` of type attrs-of-string, mapping an env var name to an `op://<vault>/<item>/<field>` reference. The shared module sets the common entries. A host's home config can merge in its own. Every other view derives from this one attrset:
+- **Registry shape.** A custom option `jn.secrets.entries` whose values are a string or `{ reference; export }`, mapping an env var name to an `op://<vault>/<item>/<field>` reference. The shared module sets the common entries. A host's home config can merge in its own. Every other view derives from this one attrset:
   - opnix `programs.onepassword-secrets.secrets`, one entry per env var, `kind = "field"`, mode `0600`, path under a dedicated secrets directory in the user's config dir, with the file named after the env var.
   - The fish export block.
   - The check alias's list of names.
@@ -74,7 +74,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 
 ## Testing Decisions
 
-- **What a good test asserts here.** It asserts what the user observes: the evaluated config a rebuild would apply, and the env a new shell has. It does not assert how opnix generates its JSON config or the order of activation fragments, except for the abort behavior above, which is observable.
+- **What a good test asserts here.** It asserts what the user observes: the evaluated config a rebuild would apply, and the env a new shell has. It does not assert how opnix generates its JSON config or the order of activation fragments, except for the abort behavior above and the ordering consumers of the provisioned files depend on, which are observable.
 - **Seam 1 is the flake check.** It is the evaluated home configuration of each host. It runs offline, needs no token, and never sees a secret value. It covers registry consistency, the API-key regression, and the vault prefix rule.
 - **Seam 2 is the post-switch check.** After a real switch, a fresh fish shell runs the check alias and every registered name is present and non-empty. The alias prints names only. This is the only seam that proves the token, the vault permissions, and the fetch work end to end, so it runs on both hosts.
 - **Failure-path checks on a real machine.** Rebuild once with the token file moved aside and confirm that activation completes, HM links are updated, and the last fetched values remain. Then rebuild once with a bogus token and confirm the same.
