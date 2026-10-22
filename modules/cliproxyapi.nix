@@ -76,7 +76,7 @@ let
   };
 in
 {
-  jn.secrets.env = {
+  jn.secrets.entries = {
     CLIPROXYAPI_PROXY_KEY = {
       reference = "op://Agents/cliproxyapi/proxy-key";
       export = false;

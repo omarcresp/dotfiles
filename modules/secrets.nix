@@ -7,8 +7,8 @@
 let
   cfg = config.jn.secrets;
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  names = lib.attrNames cfg.env;
-  exported = lib.filter (name: cfg.env.${name}.export) names;
+  names = lib.attrNames cfg.entries;
+  exported = lib.filter (name: cfg.entries.${name}.export) names;
   secretPath = name: "$HOME/${cfg.dir}/${name}";
 
   provision = pkgs.writeShellApplication {
@@ -49,14 +49,14 @@ let
       }
 
       ${lib.concatMapStringsSep "\n" (
-        name: "provision ${name} ${lib.escapeShellArg cfg.env.${name}.reference}"
+        name: "provision ${name} ${lib.escapeShellArg cfg.entries.${name}.reference}"
       ) names}
     '';
   };
 in
 {
   options.jn.secrets = {
-    env = lib.mkOption {
+    entries = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.coercedTo lib.types.str (reference: { inherit reference; }) (
           lib.types.submodule {
@@ -78,10 +78,10 @@ in
       default = { };
       description = ''
         Name to `op://` reference, either a bare string or
-        `{ reference; export; }`. Each value is fetched at activation into its
-        own file under `dir`, whose path is in `files`. Fish exports the entries
-        with `export` set at shell start; the rest are read from their file by
-        whatever consumes them.
+        `{ reference; export; }`. Every entry is provisioned at activation into
+        its own file under `dir`, whose path is in `files`. Fish also exports
+        each one at shell start unless `export = false`, in which case only
+        whatever consumes the file sees the value.
       '';
     };
 
@@ -124,12 +124,12 @@ in
     assertions = [
       {
         assertion = lib.all (name: builtins.match "[A-Za-z_][A-Za-z0-9_]*" name != null) names;
-        message = "jn.secrets.env names are interpolated into shell code and must be plain identifiers.";
+        message = "jn.secrets.entries names are interpolated into shell code and must be plain identifiers.";
       }
     ];
 
     jn.secrets = {
-      env.OP_SERVICE_ACCOUNT_TOKEN = lib.mkDefault "op://Agents/Agents service account token/password";
+      entries.OP_SERVICE_ACCOUNT_TOKEN = lib.mkDefault "op://Agents/Agents service account token/password";
       dir = ".config/jn/secrets";
       files = lib.genAttrs names (name: "${config.home.homeDirectory}/${cfg.dir}/${name}");
       provisioner = provision;

@@ -79,7 +79,7 @@ let
       {
         home-manager.users.${user}.jn.secrets = {
           opCommand = "${opStub}";
-          env = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
+          entries = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
             JN_CHECK_MISSING = "op://Agents/check/missing";
             JN_CHECK_HIDDEN = {
               reference = "op://Agents/check/hidden";
@@ -92,7 +92,7 @@ let
   });
 
   secrets = variant.jn.secrets;
-  names = lib.attrNames secrets.env;
+  names = lib.attrNames secrets.entries;
   token = "dummy-token";
 
   configFish = variant.xdg.configFile."fish/config.fish".source;
@@ -122,8 +122,8 @@ let
   '';
 in
 assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.reference) (
-  lib.attrValues secrets.env
-)) "every jn.secrets.env reference must live in the Agents vault";
+  lib.attrValues secrets.entries
+)) "every jn.secrets.entries reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
 assert lib.all (
@@ -174,7 +174,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
     [ "$(mode "$dir")" = 700 ] || fail "secrets dir is not 0700"
     ${lib.concatMapStringsSep "\n" (name: ''
       [ "$(mode "$dir/${name}")" = 600 ] || fail "${name} is not 0600"
-      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.env.${name}.reference}"} ] \
+      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.entries.${name}.reference}"} ] \
         || fail "${name} holds the wrong value"
     '') names}
     [ "$(ls -A "$dir" | wc -l)" -eq ${toString (lib.length names)} ] \
