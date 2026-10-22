@@ -129,24 +129,29 @@ let
     ++ lib.optional (callsOp fish.interactiveShellInit) "programs.fish.interactiveShellInit";
 
   # Generated programs hide their op calls behind a store path, so the build
-  # scans what activation references. Entries that only link or clean up the
-  # generation pull in its whole closure and carry no secret reads.
-  linkingEntries = [
-    "batCache"
-    "checkFilesChanged"
-    "checkLinkTargets"
-    "linkGeneration"
-    "onFilesChange"
-    "reloadSystemd"
-    "trampolineApps"
-  ];
+  # scans what activation references. The home generation's own outputs are
+  # left out: referencing them would make the check build the whole generation.
+  leadsToGeneration =
+    drv:
+    let
+      name = lib.removeSuffix ".drv" (builtins.substring 33 (-1) (baseNameOf drv));
+    in
+    lib.elem name [
+      "home-manager-files"
+      "home-files"
+      "home-manager-path"
+      "home.path"
+      "home-manager-fonts"
+    ]
+    || lib.hasSuffix ".homemanagerfontsversion" name;
+  withoutGeneration =
+    text:
+    builtins.appendContext (builtins.unsafeDiscardStringContext text) (
+      lib.filterAttrs (drv: _: !leadsToGeneration drv) (builtins.getContext text)
+    );
   activationTexts = lib.mapAttrsToList (
-    name: entry:
-    pkgs.writeText "activation-${name}" (
-      if lib.elem name linkingEntries then builtins.unsafeDiscardStringContext entry.data else entry.data
-    )
+    name: entry: pkgs.writeText "activation-${name}" (withoutGeneration entry.data)
   ) (removeAttrs activation [ "jnSecrets" ]);
-  provisionerPath = builtins.unsafeDiscardStringContext "${real.jn.secrets.provisioner}";
 
   secrets = variant.jn.secrets;
   names = lib.attrNames secrets.entries;
@@ -233,7 +238,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
     }
     for text in ${lib.escapeShellArgs activationTexts}; do
       while read -r path; do
-        [ -e "$path" ] && [ "$path" != ${provisionerPath} ] || continue
+        [ -e "$path" ] || continue
         hits="$(grep -rIlE -e ${lib.escapeShellArg opPattern} "$path" || true)"
         [ -z "$hits" ] || fail "only the provisioner may call op, but $path (referenced by $(basename "$text")) does: $hits"
       done < <(scanned "$text")
