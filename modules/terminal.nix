@@ -264,4 +264,6 @@
        set -g detach-on-destroy off
     '';
   };
+
+  imports = [ ./secrets.nix ];
 }

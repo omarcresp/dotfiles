@@ -104,5 +104,8 @@ in
     tailscaleServePort = port;
   };
 
-  imports = [ inputs.cliproxyapi.homeModules.default ];
+  imports = [
+    inputs.cliproxyapi.homeModules.default
+    ./secrets.nix
+  ];
 }
