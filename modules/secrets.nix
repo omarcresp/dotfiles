@@ -10,9 +10,12 @@ let
   names = lib.attrNames cfg.entries;
   exported = lib.filter (name: cfg.entries.${name}.export) names;
 
+  # Provisioned means non-whitespace content, for the export and the check alike.
+  hasContent = name: ''
+    test -s "${cfg.files.${name}}"; and set -l v (string collect < "${cfg.files.${name}}"); and string match -qr '\S' -- "$v"'';
+
   provisionedLines = lib.concatMapStringsSep "\n" (
-    name:
-    ''test -s "${cfg.files.${name}}"; and echo "provisioned ${name}"; or echo "unprovisioned ${name}"''
+    name: ''begin; ${hasContent name}; end; and echo "provisioned ${name}"; or echo "unprovisioned ${name}"''
   ) names;
 
   provision = pkgs.writeShellApplication {
@@ -89,6 +92,8 @@ in
       '';
     };
 
+    # The provisioner writes under $HOME, so the check relocates it by overriding
+    # home.homeDirectory; activation's $HOME is that same directory.
     files = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       readOnly = true;
@@ -148,7 +153,7 @@ in
 
     # Only a file with non-blank content is exported, so an unprovisioned name never shadows a tool's own auth.
     programs.fish.shellInit = lib.concatMapStringsSep "\n" (name: ''
-      test -s "${cfg.files.${name}}"; and set -l v (string collect < "${cfg.files.${name}}"); and string match -qr '\S' -- "$v"; and set -gx ${name} $v
+      ${hasContent name}; and set -gx ${name} $v
     '') exported;
 
     # A function rather than an alias: fish appends $argv to an alias body, which breaks a loop.

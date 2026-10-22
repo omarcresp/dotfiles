@@ -143,7 +143,7 @@ let
     source ${checkFunction}
     set -l report (jn-secrets-check)
 
-    for line in "present OP_SERVICE_ACCOUNT_TOKEN" "missing JN_CHECK_EMPTY" "missing JN_CHECK_MISSING" "provisioned OP_SERVICE_ACCOUNT_TOKEN" "provisioned JN_CHECK_HIDDEN" "unprovisioned JN_CHECK_EMPTY" "unprovisioned JN_CHECK_MISSING"
+    for line in "present OP_SERVICE_ACCOUNT_TOKEN" "missing JN_CHECK_EMPTY" "missing JN_CHECK_MISSING" "provisioned OP_SERVICE_ACCOUNT_TOKEN" "provisioned JN_CHECK_HIDDEN" "unprovisioned JN_CHECK_EMPTY" "unprovisioned JN_CHECK_BLANK" "unprovisioned JN_CHECK_SPACES" "unprovisioned JN_CHECK_MISSING"
       contains -- $line $report
       or fail "jn-secrets-check did not report: $line"
     end
