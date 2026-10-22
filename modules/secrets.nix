@@ -92,8 +92,9 @@ in
       '';
     };
 
-    # The provisioner writes under $HOME, so the check relocates it by overriding
-    # home.homeDirectory; activation's $HOME is that same directory.
+    # `files` derives from home.homeDirectory and the provisioner from $HOME,
+    # and Home Manager activation refuses to run unless they match (its
+    # SKIP_SANITY_CHECKS escape hatch aside).
     files = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;
       readOnly = true;
