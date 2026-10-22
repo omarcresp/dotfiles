@@ -14,7 +14,7 @@ let
     else
       "http://omars-macbook-pro:${toString port}";
   files = config.jn.secrets.files;
-  readFile = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg files.${name}}";
+  catCommand = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg files.${name}}";
 
   # Both client configs are rewritten by their own tools, so patch only the keys
   # we own and leave the rest alone.
@@ -28,7 +28,7 @@ let
       claude_settings="${config.home.homeDirectory}/.claude/settings.json"
       codex_config="${config.home.homeDirectory}/.codex/config.toml"
 
-      token="$(${readFile "CLIPROXYAPI_PROXY_KEY"} 2>/dev/null || true)"
+      token="$(${catCommand "CLIPROXYAPI_PROXY_KEY"} 2>/dev/null || true)"
       if [ -z "''${token//[[:space:]]/}" ]; then
         echo "cliproxyapi: WARNING could not read the proxy key; leaving client configs alone." >&2
         exit 0
@@ -123,8 +123,8 @@ in
     };
 
     # Read at activation so neither key reaches the Nix store.
-    secretKeyCommand = readFile "CLIPROXYAPI_SECRET_KEY";
-    apiKeyCommand = readFile "CLIPROXYAPI_PROXY_KEY";
+    secretKeyCommand = catCommand "CLIPROXYAPI_SECRET_KEY";
+    apiKeyCommand = catCommand "CLIPROXYAPI_PROXY_KEY";
 
     tailscaleServePort = port;
   };
