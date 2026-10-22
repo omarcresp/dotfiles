@@ -81,19 +81,33 @@ let
     ];
   });
 
-  sorted = real.lib.dag.topoSort real.home.activation;
-  order = map (entry: entry.name) sorted.result;
-  indexOf = name: lib.lists.findFirstIndex (candidate: candidate == name) null order;
+  activation = real.home.activation;
+  sortsCleanly = dag: (real.lib.dag.topoSort dag) ? result;
+
+  # Siblings sort in an arbitrary but stable order, so a plain position check
+  # passes by luck. Ordering is enforced exactly when asking jnSecrets to run
+  # after the consumer makes the graph cyclic.
+  forcedBefore =
+    consumer:
+    sortsCleanly activation
+    && !sortsCleanly (
+      activation
+      // {
+        jnSecrets = activation.jnSecrets // {
+          after = activation.jnSecrets.after ++ [ consumer ];
+        };
+      }
+    );
 
   # Consumers of the registry's files. The upstream seed entry exists only on darwin.
   orderedAfterSecrets =
-    lib.optional (pkgs.stdenv.hostPlatform.isDarwin && real.home.activation ? cliproxyapi) "cliproxyapi"
+    lib.optional (pkgs.stdenv.hostPlatform.isDarwin && activation ? cliproxyapi) "cliproxyapi"
     ++ [ "cliproxyapiRouteClients" ];
 
   callsOp = text: lib.hasInfix real.jn.secrets.opCommand text || lib.hasInfix "op read" text;
   offenders =
     lib.mapAttrsToList (name: _: "home.activation.${name}") (
-      lib.filterAttrs (name: entry: name != "jnSecrets" && callsOp entry.data) real.home.activation
+      lib.filterAttrs (name: entry: name != "jnSecrets" && callsOp entry.data) activation
     )
     ++ lib.mapAttrsToList (name: _: "programs.fish.shellAliases.${name}") (
       lib.filterAttrs (_: callsOp) real.programs.fish.shellAliases
@@ -150,14 +164,10 @@ assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.referen
 )) "every jn.secrets.entries reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
   "jn.secrets.opCommand must run op without the service account token";
-assert lib.assertMsg (
-  sorted ? result
-) "home.activation has an ordering cycle, so no consumer order can be checked";
+assert lib.assertMsg (sortsCleanly activation) "home.activation has an ordering cycle";
 assert lib.all (
   consumer:
-  lib.assertMsg (
-    indexOf "jnSecrets" != null && indexOf consumer != null && indexOf "jnSecrets" < indexOf consumer
-  ) "home.activation.jnSecrets must run before home.activation.${consumer}"
+  lib.assertMsg (forcedBefore consumer) "home.activation.jnSecrets must run before home.activation.${consumer}"
 ) orderedAfterSecrets;
 assert lib.assertMsg (offenders == [ ])
   "only the provisioner may call op, but these call it too: ${lib.concatStringsSep ", " offenders}";
