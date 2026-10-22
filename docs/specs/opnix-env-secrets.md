@@ -64,7 +64,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 - **Remove empty keys.** The seven empty `*_API_KEY` entries come out of the NixOS host's session variables.
 - **Activation must not abort.** Upstream opnix's activation fragment calls `exit 0` when the token file is missing and `exit 1` when it is unreadable. HM concatenates activation fragments into one script, so either call can end the whole activation. The implementation must confirm where that fragment lands in the activation DAG relative to `linkGeneration`. If a missing or unreadable token can skip or fail the rest of activation, the shared module must make sure the fragment cannot end activation early. Possible fixes are guarding before it runs or overriding the fragment. The chosen fix gets a one-line comment explaining why.
 - **Fetch timing.** Values refresh on every rebuild. There is no polling daemon and no separate refresh command. A rebuild is the refresh.
-- **cliproxyapi stays as it is.** It keeps reading from the Personal vault through the desktop `op` at activation. Only the `op` path helper moves.
+- **cliproxyapi's keys live in the registry.** Its proxy key and secret key are in `Agents` (`op://Agents/cliproxyapi/{proxy-key,secret-key}`) and registered as entries with `export = false`, so the provisioner fetches them but fish does not export them. An entry is a bare reference or `{ reference; export; }`, and `jn.secrets.files.<NAME>` is its absolute file path. The server config, the client routing script, and `jn-cpa-key` read those files, so the provisioner is the only caller of `op`. The proxy key is registered on both hosts and the secret key on the MacBook, where the server runs.
 - **Flake check (approved new tooling).** Add a `checks` output for each system the hosts use. The check evaluates both host home configurations and fails when:
   - a registry name has no matching opnix secret, or the reverse;
   - a registry name is missing from the generated fish init;
@@ -82,7 +82,6 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 
 ## Out of Scope
 
-- Migrating cliproxyapi's own keys to `Agents` or to opnix.
 - System-level secrets, the NixOS or nix-darwin opnix daemons, and secret polling.
 - Exporting the values to GUI apps launched by launchd or the desktop session.
 - bash and zsh exports. fish is the shell this repo configures.
