@@ -151,7 +151,6 @@ pkgs.runCommand "jn-secrets-check-${system}"
       (cd "$dir" && find . -mindepth 1 -exec stat -c '%a %n' {} + | sort; cat ./* 2>/dev/null) || true
     }
 
-    # (a) a successful read writes 0600 files in a 0700 directory, and nothing else.
     "$provisioner" || fail "provisioner exited nonzero on a successful read"
     [ "$(mode "$dir")" = 700 ] || fail "secrets dir is not 0700"
     ${lib.concatMapStringsSep "\n" (name: ''
@@ -163,7 +162,6 @@ pkgs.runCommand "jn-secrets-check-${system}"
       || fail "secrets dir holds files besides the registered names"
     first="$(snapshot)"
 
-    # (b) a failing read exits 0, warns without leaking stdout, and keeps the existing files.
     STUB_FAIL=1 "$provisioner" 2> "$TMPDIR/warnings" \
       || fail "provisioner exited nonzero on a failed read"
     grep -q 'could not read OP_SERVICE_ACCOUNT_TOKEN (stub: \[ERROR\] boom)' "$TMPDIR/warnings" \
@@ -172,17 +170,14 @@ pkgs.runCommand "jn-secrets-check-${system}"
       || fail "warning included more than op's first stderr line"
     [ "$(snapshot)" = "$first" ] || fail "failed read changed the secrets dir"
 
-    # (b2) a read that succeeds with only whitespace is a failed read too.
     STUB_BLANK=1 "$provisioner" 2> "$TMPDIR/warnings" \
       || fail "provisioner exited nonzero on a blank read"
     grep -q 'could not read' "$TMPDIR/warnings" || fail "blank read did not warn"
     [ "$(snapshot)" = "$first" ] || fail "blank read changed the secrets dir"
 
-    # (c) a second successful run converges to the same content, modes and file set.
     "$provisioner" || fail "provisioner exited nonzero on a rerun"
     [ "$(snapshot)" = "$first" ] || fail "rerun did not converge"
 
-    # (d) a write that fails after the read still exits 0, and so does an unusable directory.
     STUB_LOCK="$dir" "$provisioner" 2> "$TMPDIR/warnings" \
       || fail "provisioner exited nonzero when the write failed"
     chmod 700 "$dir"
