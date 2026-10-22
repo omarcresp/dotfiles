@@ -57,7 +57,8 @@ let
     printf 'value-for-%s\n' "$2"
   '';
 
-  # Registered test names: files that hold nothing usable, and one with no file at all.
+  # Registered test names: files that hold nothing usable, one with no file at all,
+  # and one that is provisioned but opts out of the export.
   unusable = {
     JN_CHECK_EMPTY = "";
     JN_CHECK_BLANK = "\n";
@@ -71,6 +72,10 @@ let
           opCommand = "${opStub}";
           env = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
             JN_CHECK_MISSING = "op://Agents/check/missing";
+            JN_CHECK_HIDDEN = {
+              reference = "op://Agents/check/hidden";
+              export = false;
+            };
           };
         };
       }
@@ -101,10 +106,13 @@ let
       and fail "$name was exported without usable content"
     end
 
+    set -q JN_CHECK_HIDDEN
+    and fail "JN_CHECK_HIDDEN was exported despite export = false"
+
     exit 0
   '';
 in
-assert lib.assertMsg (lib.all (ref: lib.hasPrefix "op://Agents/" ref) (
+assert lib.assertMsg (lib.all (entry: lib.hasPrefix "op://Agents/" entry.reference) (
   lib.attrValues secrets.env
 )) "every jn.secrets.env reference must live in the Agents vault";
 assert lib.assertMsg (lib.hasPrefix "/usr/bin/env -u OP_SERVICE_ACCOUNT_TOKEN " real.jn.secrets.opCommand)
@@ -140,6 +148,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
         name: content: "printf '%s' ${lib.escapeShellArg content} > \"$HOME/${secrets.dir}/${name}\""
       ) unusable
     )}
+    printf '%s\n' hidden-value > "$HOME/${secrets.dir}/JN_CHECK_HIDDEN"
     fish --no-config ${probe}
 
     provisioner=${lib.getExe secrets.provisioner}
@@ -155,7 +164,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
     [ "$(mode "$dir")" = 700 ] || fail "secrets dir is not 0700"
     ${lib.concatMapStringsSep "\n" (name: ''
       [ "$(mode "$dir/${name}")" = 600 ] || fail "${name} is not 0600"
-      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.env.${name}}"} ] \
+      [ "$(cat "$dir/${name}")" = ${lib.escapeShellArg "value-for-${secrets.env.${name}.reference}"} ] \
         || fail "${name} holds the wrong value"
     '') names}
     [ "$(ls -A "$dir" | wc -l)" -eq ${toString (lib.length names)} ] \

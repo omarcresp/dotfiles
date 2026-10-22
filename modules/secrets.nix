@@ -8,6 +8,7 @@ let
   cfg = config.jn.secrets;
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   names = lib.attrNames cfg.env;
+  exported = lib.filter (name: cfg.env.${name}.export) names;
   secretPath = name: "$HOME/${cfg.dir}/${name}";
 
   provision = pkgs.writeShellApplication {
@@ -48,7 +49,7 @@ let
       }
 
       ${lib.concatMapStringsSep "\n" (
-        name: "provision ${name} ${lib.escapeShellArg cfg.env.${name}}"
+        name: "provision ${name} ${lib.escapeShellArg cfg.env.${name}.reference}"
       ) names}
     '';
   };
@@ -56,12 +57,38 @@ in
 {
   options.jn.secrets = {
     env = lib.mkOption {
-      type = lib.types.attrsOf lib.types.str;
+      type = lib.types.attrsOf (
+        lib.types.coercedTo lib.types.str (reference: { inherit reference; }) (
+          lib.types.submodule {
+            options = {
+              reference = lib.mkOption {
+                type = lib.types.str;
+                description = "`op://` reference to fetch.";
+              };
+
+              export = lib.mkOption {
+                type = lib.types.bool;
+                default = true;
+                description = "Whether fish exports the value as an env var of the same name.";
+              };
+            };
+          }
+        )
+      );
       default = { };
       description = ''
-        Env var name to `op://` reference. Each value is fetched at activation
-        into its own file under `dir` and exported by fish at shell start.
+        Name to `op://` reference, either a bare string or
+        `{ reference; export; }`. Each value is fetched at activation into its
+        own file under `dir`, whose path is in `files`. Fish exports the entries
+        with `export` set at shell start; the rest are read from their file by
+        whatever consumes them.
       '';
+    };
+
+    files = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      readOnly = true;
+      description = "Absolute path of the file holding each registered name.";
     };
 
     opCommand = lib.mkOption {
@@ -72,9 +99,9 @@ in
       description = ''
         Desktop `op` invocation for the user's own vaults. With
         `OP_SERVICE_ACCOUNT_TOKEN` exported, `op` would otherwise switch to the
-        service account, which cannot read the Personal vault. Hosts have no
-        reason to set it; the flake check overrides it with a stub `op` to
-        exercise the provisioner.
+        service account, which cannot read the Personal vault. The provisioner
+        is its only caller. Hosts have no reason to set it; the flake check
+        overrides it with a stub `op` to exercise the provisioner.
       '';
     };
 
@@ -104,6 +131,7 @@ in
     jn.secrets = {
       env.OP_SERVICE_ACCOUNT_TOKEN = lib.mkDefault "op://Agents/Agents service account token/password";
       dir = ".config/jn/secrets";
+      files = lib.genAttrs names (name: "${config.home.homeDirectory}/${cfg.dir}/${name}");
       provisioner = provision;
     };
 
@@ -115,11 +143,11 @@ in
     # Only a file with non-blank content is exported, so an unprovisioned name never shadows a tool's own auth.
     programs.fish.shellInit = lib.concatMapStringsSep "\n" (name: ''
       test -s "${secretPath name}"; and set -l v (string collect < "${secretPath name}"); and string match -qr '\S' -- "$v"; and set -gx ${name} $v
-    '') names;
+    '') exported;
 
     # A function rather than an alias: fish appends $argv to an alias body, which breaks a loop.
     programs.fish.functions.jn-secrets-check = ''
-      for name in ${lib.concatStringsSep " " names}
+      for name in ${lib.concatStringsSep " " exported}
         if test -n "$$name"
           echo "present $name"
         else
