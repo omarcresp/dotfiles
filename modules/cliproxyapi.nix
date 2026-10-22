@@ -97,8 +97,9 @@ in
   '';
 
   # Upstream seeds its config from the key files, so they must exist first. The
-  # entry's `after` list merges with upstream's; the placeholder data yields to it.
-  home.activation.cliproxyapi = lib.mkIf isDarwin {
+  # entry's `after` list merges with upstream's; the placeholder data yields to it
+  # and exists only so the entry is never defined without the upstream service.
+  home.activation.cliproxyapi = lib.mkIf config.services.cliproxyapi.enable {
     data = lib.mkDefault "";
     after = [ "jnSecrets" ];
     before = [ ];
