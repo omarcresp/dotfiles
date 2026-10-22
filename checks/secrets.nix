@@ -99,19 +99,49 @@ let
       }
     );
 
-  # Consumers of the registry's files. The upstream seed entry exists only on darwin.
-  orderedAfterSecrets =
-    lib.optional (pkgs.stdenv.hostPlatform.isDarwin && activation ? cliproxyapi) "cliproxyapi"
-    ++ [ "cliproxyapiRouteClients" ];
+  cpa = real.services.cliproxyapi or null;
+  cpaEnabled = cpa != null && cpa.enable;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+
+  # Mirrors cliproxyapi.nix's catCommand, so a changed command fails here.
+  catCommand = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg real.jn.secrets.files.${name}}";
+
+  orderedAfterSecrets = lib.optional cpaEnabled "cliproxyapi" ++ [ "cliproxyapiRouteClients" ];
 
   callsOp = text: lib.hasInfix real.jn.secrets.opCommand text || lib.hasInfix "op read" text;
+  fish = real.programs.fish;
   offenders =
     lib.mapAttrsToList (name: _: "home.activation.${name}") (
       lib.filterAttrs (name: entry: name != "jnSecrets" && callsOp entry.data) activation
     )
     ++ lib.mapAttrsToList (name: _: "programs.fish.shellAliases.${name}") (
-      lib.filterAttrs (_: callsOp) real.programs.fish.shellAliases
-    );
+      lib.filterAttrs (_: callsOp) fish.shellAliases
+    )
+    ++ lib.mapAttrsToList (name: _: "programs.fish.functions.${name}") (
+      lib.filterAttrs (_: callsOp) (lib.mapAttrs (_: f: f.body or f) fish.functions)
+    )
+    ++ lib.optional (callsOp fish.shellInit) "programs.fish.shellInit"
+    ++ lib.optional (callsOp fish.interactiveShellInit) "programs.fish.interactiveShellInit";
+
+  # Generated programs hide their op calls behind a store path, so the build
+  # scans what activation references. Entries that only link or clean up the
+  # generation pull in its whole closure and carry no secret reads.
+  linkingEntries = [
+    "batCache"
+    "checkFilesChanged"
+    "checkLinkTargets"
+    "linkGeneration"
+    "onFilesChange"
+    "reloadSystemd"
+    "trampolineApps"
+  ];
+  activationTexts = lib.mapAttrsToList (
+    name: entry:
+    pkgs.writeText "activation-${name}" (
+      if lib.elem name linkingEntries then builtins.unsafeDiscardStringContext entry.data else entry.data
+    )
+  ) (removeAttrs activation [ "jnSecrets" ]);
+  provisionerPath = builtins.unsafeDiscardStringContext "${real.jn.secrets.provisioner}";
 
   secrets = variant.jn.secrets;
   names = lib.attrNames secrets.entries;
@@ -169,6 +199,19 @@ assert lib.all (
   consumer:
   lib.assertMsg (forcedBefore consumer) "home.activation.jnSecrets must run before home.activation.${consumer}"
 ) orderedAfterSecrets;
+assert lib.assertMsg (
+  !cpaEnabled || (activation ? cliproxyapi && lib.hasInfix "cliproxyapi-seed" activation.cliproxyapi.data)
+) "home.activation.cliproxyapi is no longer upstream's seed entry; its ordering after jnSecrets has no effect";
+assert lib.assertMsg (
+  !cpaEnabled || cpa.secretKeyCommand == catCommand "CLIPROXYAPI_SECRET_KEY"
+) "services.cliproxyapi.secretKeyCommand must be a cat of jn.secrets.files.CLIPROXYAPI_SECRET_KEY";
+assert lib.assertMsg (
+  !cpaEnabled || cpa.apiKeyCommand == catCommand "CLIPROXYAPI_PROXY_KEY"
+) "services.cliproxyapi.apiKeyCommand must be a cat of jn.secrets.files.CLIPROXYAPI_PROXY_KEY";
+assert lib.assertMsg (
+  !isDarwin
+  || lib.hasInfix real.jn.secrets.files.CLIPROXYAPI_SECRET_KEY (fish.shellAliases.jn-cpa-key or "")
+) "programs.fish.shellAliases.jn-cpa-key must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY";
 assert lib.assertMsg (offenders == [ ])
   "only the provisioner may call op, but these call it too: ${lib.concatStringsSep ", " offenders}";
 pkgs.runCommand "jn-secrets-check-${system}"
@@ -180,6 +223,17 @@ pkgs.runCommand "jn-secrets-check-${system}"
       echo "secrets check: $*" >&2
       exit 1
     }
+
+    scanned() {
+      grep -aoE '/nix/store/[0-9a-z]{32}-[A-Za-z0-9._+=-]+' "$1" | sort -u
+    }
+    for text in ${lib.escapeShellArgs activationTexts}; do
+      while read -r path; do
+        [ -e "$path" ] && [ "$path" != ${provisionerPath} ] || continue
+        hits="$(grep -rIlF -e 'op read' -e ${lib.escapeShellArg real.jn.secrets.opCommand} "$path" || true)"
+        [ -z "$hits" ] || fail "only the provisioner may call op, but $path (referenced by $(basename "$text")) does: $hits"
+      done < <(scanned "$text")
+    done
 
     mode() { stat -c %a "$1"; }
 
