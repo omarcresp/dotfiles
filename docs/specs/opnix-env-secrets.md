@@ -36,7 +36,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 18. As the dotfiles owner, I want a host to be able to add host-only entries to the registry, so that a key needed on one machine doesn't spread to the other.
 19. As the dotfiles owner, I want the MacBook and the NixOS host to use the same module, so that behavior is identical apart from paths the platform dictates.
 20. As the dotfiles owner, I want a flake check that evaluates both hosts' home configs, so that I catch a broken registry before a rebuild.
-21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its opnix secret or its fish export, so that the three views of the registry cannot drift apart.
+21. As the dotfiles owner, I want the flake check to fail if any registry entry is missing its opnix secret, or its fish export unless the entry sets `export = false`, so that the three views of the registry cannot drift apart.
 22. As the dotfiles owner, I want the flake check to fail if any API key appears in session variables again, so that the empty-key regression cannot return.
 23. As the dotfiles owner, I want the flake check to fail if a registry reference points outside the `Agents` vault, so that the service account is never asked for a value it cannot read.
 24. As the dotfiles owner, I want a `jn-` alias that reports which registered values are present in the current shell (names only, never values), so that I can confirm a machine after a switch.
