@@ -104,5 +104,16 @@
           ];
         };
       };
+
+      checks = nixpkgs.lib.genAttrs [ "aarch64-darwin" "x86_64-linux" ] (system: {
+        secrets = import ./checks/secrets.nix {
+          inherit
+            self
+            nixpkgs
+            user
+            system
+            ;
+        };
+      });
     };
 }
