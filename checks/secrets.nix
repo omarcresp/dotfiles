@@ -99,16 +99,15 @@ let
       }
     );
 
-  cpa = real.services.cliproxyapi or null;
-  cpaEnabled = cpa != null && cpa.enable;
-  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-
-  # Mirrors cliproxyapi.nix's catCommand, so a changed command fails here.
-  catCommand = name: "${pkgs.coreutils}/bin/cat ${lib.escapeShellArg real.jn.secrets.files.${name}}";
+  cpa = real.services.cliproxyapi;
+  cpaEnabled = cpa.enable;
 
   orderedAfterSecrets = lib.optional cpaEnabled "cliproxyapi" ++ [ "cliproxyapiRouteClients" ];
 
   callsOp = text: lib.hasInfix real.jn.secrets.opCommand text || lib.hasInfix "op read" text;
+
+  # A consumer reads the registered file and never reaches op itself.
+  readsFile = name: command: lib.hasInfix real.jn.secrets.files.${name} command && !callsOp command;
   fish = real.programs.fish;
   offenders =
     lib.mapAttrsToList (name: _: "home.activation.${name}") (
@@ -203,15 +202,14 @@ assert lib.assertMsg (
   !cpaEnabled || (activation ? cliproxyapi && lib.hasInfix "cliproxyapi-seed" activation.cliproxyapi.data)
 ) "home.activation.cliproxyapi is no longer upstream's seed entry; its ordering after jnSecrets has no effect";
 assert lib.assertMsg (
-  !cpaEnabled || cpa.secretKeyCommand == catCommand "CLIPROXYAPI_SECRET_KEY"
-) "services.cliproxyapi.secretKeyCommand must be a cat of jn.secrets.files.CLIPROXYAPI_SECRET_KEY";
+  !cpaEnabled || readsFile "CLIPROXYAPI_SECRET_KEY" cpa.secretKeyCommand
+) "services.cliproxyapi.secretKeyCommand must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY without calling op";
 assert lib.assertMsg (
-  !cpaEnabled || cpa.apiKeyCommand == catCommand "CLIPROXYAPI_PROXY_KEY"
-) "services.cliproxyapi.apiKeyCommand must be a cat of jn.secrets.files.CLIPROXYAPI_PROXY_KEY";
+  !cpaEnabled || readsFile "CLIPROXYAPI_PROXY_KEY" cpa.apiKeyCommand
+) "services.cliproxyapi.apiKeyCommand must read jn.secrets.files.CLIPROXYAPI_PROXY_KEY without calling op";
 assert lib.assertMsg (
-  !isDarwin
-  || lib.hasInfix real.jn.secrets.files.CLIPROXYAPI_SECRET_KEY (fish.shellAliases.jn-cpa-key or "")
-) "programs.fish.shellAliases.jn-cpa-key must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY";
+  !cpaEnabled || readsFile "CLIPROXYAPI_SECRET_KEY" fish.shellAliases.jn-cpa-key
+) "programs.fish.shellAliases.jn-cpa-key must read jn.secrets.files.CLIPROXYAPI_SECRET_KEY without calling op";
 assert lib.assertMsg (offenders == [ ])
   "only the provisioner may call op, but these call it too: ${lib.concatStringsSep ", " offenders}";
 pkgs.runCommand "jn-secrets-check-${system}"
