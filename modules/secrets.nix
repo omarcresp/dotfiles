@@ -97,11 +97,13 @@ in
         if isDarwin then "/usr/local/bin/op" else "/run/wrappers/bin/op"
       }";
       description = ''
-        Desktop `op` invocation for the user's own vaults. With
-        `OP_SERVICE_ACCOUNT_TOKEN` exported, `op` would otherwise switch to the
-        service account, which cannot read the Personal vault. The provisioner
-        is its only caller. Hosts have no reason to set it; the flake check
-        overrides it with a stub `op` to exercise the provisioner.
+        Desktop `op` invocation for the user's own vaults. The token is stripped
+        so the provisioner always reads through the user's desktop session,
+        including when it refreshes the token itself; with it exported, `op`
+        would switch to the service account, which cannot read the Personal
+        vault. The provisioner is its only caller. Hosts have no reason to set
+        it; the flake check overrides it with a stub `op` to exercise the
+        provisioner.
       '';
     };
 
