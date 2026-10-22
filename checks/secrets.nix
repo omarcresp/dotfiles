@@ -66,6 +66,8 @@ let
     printf 'value-for-%s\n' "$2"
   '';
 
+  token = "dummy-token";
+
   # Registered test names: files that hold nothing usable, one with no file at all,
   # and one that is provisioned but opts out of the export.
   unusable = {
@@ -74,16 +76,33 @@ let
     JN_CHECK_SPACES = "  \n";
   };
 
+  # The variant's home, so fish reads the files it would read for real, from `files`.
+  fishHome = pkgs.runCommand "secrets-fish-home" { } ''
+    dir="$out/${real.jn.secrets.dir}"
+    mkdir -p "$dir"
+    printf '%s\n' '${token}' > "$dir/OP_SERVICE_ACCOUNT_TOKEN"
+    ${lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        name: content: "printf '%s' ${lib.escapeShellArg content} > \"$dir/${name}\""
+      ) unusable
+    )}
+    printf '%s\n' hidden-value > "$dir/JN_CHECK_HIDDEN"
+  '';
+
   variant = homeOf (host.extendModules {
     modules = [
       {
-        home-manager.users.${user}.jn.secrets = {
-          opCommand = "${opStub}";
-          entries = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
-            JN_CHECK_MISSING = "op://Agents/check/missing";
-            JN_CHECK_HIDDEN = {
-              reference = "op://Agents/check/hidden";
-              export = false;
+        home-manager.users.${user} = {
+          home.homeDirectory = lib.mkForce "${fishHome}";
+
+          jn.secrets = {
+            opCommand = "${opStub}";
+            entries = lib.mapAttrs (name: _: "op://Agents/check/${name}") unusable // {
+              JN_CHECK_MISSING = "op://Agents/check/missing";
+              JN_CHECK_HIDDEN = {
+                reference = "op://Agents/check/hidden";
+                export = false;
+              };
             };
           };
         };
@@ -93,9 +112,9 @@ let
 
   secrets = variant.jn.secrets;
   names = lib.attrNames secrets.entries;
-  token = "dummy-token";
 
   configFish = variant.xdg.configFile."fish/config.fish".source;
+  checkFunction = variant.xdg.configFile."fish/functions/jn-secrets-check.fish".source;
 
   probe = pkgs.writeText "secrets-probe.fish" ''
     function fail
@@ -117,6 +136,22 @@ let
 
     set -q JN_CHECK_HIDDEN
     and fail "JN_CHECK_HIDDEN was exported despite export = false"
+
+    source ${checkFunction}
+    set -l report (jn-secrets-check)
+
+    for line in "present OP_SERVICE_ACCOUNT_TOKEN" "missing JN_CHECK_EMPTY" "missing JN_CHECK_MISSING" "provisioned OP_SERVICE_ACCOUNT_TOKEN" "provisioned JN_CHECK_HIDDEN" "unprovisioned JN_CHECK_EMPTY" "unprovisioned JN_CHECK_MISSING"
+      contains -- $line $report
+      or fail "jn-secrets-check did not report: $line"
+    end
+
+    for name in ${lib.concatStringsSep " " names}
+      test (count (string match -r -- "^(?:un)?provisioned $name\$" $report)) -eq 1
+      or fail "jn-secrets-check did not report $name exactly once as provisioned or not"
+    end
+
+    string match -q '*hidden-value*' -- $report
+    and fail "jn-secrets-check printed a value"
 
     exit 0
   '';
@@ -151,14 +186,7 @@ pkgs.runCommand "jn-secrets-check-${system}"
 
     # The export is read from the generated config.fish, as a login shell would.
     export HOME="$TMPDIR/fish-home"
-    mkdir -p "$HOME/${secrets.dir}"
-    printf '%s\n' '${token}' > "$HOME/${secrets.dir}/OP_SERVICE_ACCOUNT_TOKEN"
-    ${lib.concatStringsSep "\n" (
-      lib.mapAttrsToList (
-        name: content: "printf '%s' ${lib.escapeShellArg content} > \"$HOME/${secrets.dir}/${name}\""
-      ) unusable
-    )}
-    printf '%s\n' hidden-value > "$HOME/${secrets.dir}/JN_CHECK_HIDDEN"
+    mkdir -p "$HOME"
     fish --no-config ${probe}
 
     provisioner=${lib.getExe secrets.provisioner}

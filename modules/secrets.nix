@@ -9,7 +9,11 @@ let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   names = lib.attrNames cfg.entries;
   exported = lib.filter (name: cfg.entries.${name}.export) names;
-  secretPath = name: "$HOME/${cfg.dir}/${name}";
+
+  provisionedLines = lib.concatMapStringsSep "\n" (
+    name:
+    ''test -s "${cfg.files.${name}}"; and echo "provisioned ${name}"; or echo "unprovisioned ${name}"''
+  ) names;
 
   provision = pkgs.writeShellApplication {
     name = "jn-secrets-provision";
@@ -144,7 +148,7 @@ in
 
     # Only a file with non-blank content is exported, so an unprovisioned name never shadows a tool's own auth.
     programs.fish.shellInit = lib.concatMapStringsSep "\n" (name: ''
-      test -s "${secretPath name}"; and set -l v (string collect < "${secretPath name}"); and string match -qr '\S' -- "$v"; and set -gx ${name} $v
+      test -s "${cfg.files.${name}}"; and set -l v (string collect < "${cfg.files.${name}}"); and string match -qr '\S' -- "$v"; and set -gx ${name} $v
     '') exported;
 
     # A function rather than an alias: fish appends $argv to an alias body, which breaks a loop.
@@ -156,6 +160,7 @@ in
           echo "missing $name"
         end
       end
+      ${provisionedLines}
     '';
   };
 }
