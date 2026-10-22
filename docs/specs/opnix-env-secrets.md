@@ -50,7 +50,7 @@ A new machine needs three steps: sign in to the 1Password app, run one bootstrap
 
 - **New flake input.** `opnix` from `brizzbuzz/opnix`, pinned like the other inputs and following `nixpkgs`. Version at the time of writing is v0.11.0.
 - **Home Manager module only.** Use `opnix.homeManagerModules.default` through a new shared module that both hosts import. Do not use the NixOS or nix-darwin system modules. All the secrets are per-user, so the system daemon, the root-owned token in `/etc`, and the `onepassword-secrets` group add setup cost with no benefit.
-- **New shared module.** It is a noun-named module under the shared modules directory. It owns the registry option, the opnix configuration, the token path, and the vault name. It sits next to `terminal.nix`, which consumes it.
+- **New shared module.** It is a noun-named module under the shared modules directory. It owns the registry option, the opnix configuration, the token path, and the vault name. It also owns its own fish wiring, the export and the `jn-secrets-check` function, so `terminal.nix` only imports it.
 - **Registry shape.** A custom option `jn.secrets.env` of type attrs-of-string, mapping an env var name to an `op://<vault>/<item>/<field>` reference. The shared module sets the common entries. A host's home config can merge in its own. Every other view derives from this one attrset:
   - opnix `programs.onepassword-secrets.secrets`, one entry per env var, `kind = "field"`, mode `0600`, path under a dedicated secrets directory in the user's config dir, with the file named after the env var.
   - The fish export block.
