@@ -46,7 +46,6 @@
   fonts.fontconfig.enable = true;
 
   imports = [
-    ../../modules/cosmic.nix
     ../../modules/terminal.nix
     ../../modules/secrets.nix
     ../../modules/development.nix

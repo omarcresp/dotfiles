@@ -77,13 +77,6 @@ in
     LC_TIME = "es_CO.UTF-8";
   };
 
-  services.displayManager.cosmic-greeter.enable = true;
-  services.desktopManager.cosmic = {
-    enable = true;
-    xwayland.enable = true;
-  };
-  services.xserver.xkb.layout = "latam";
-
   # Screen bright patch
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="${pkgs.coreutils}/bin/chgrp video /sys/devices/pci0000:00/0000:00:08.1/0000:04:00.0/drm/card1/card1-eDP-1/amdgpu_bl1/brightness"
@@ -112,7 +105,6 @@ in
   services.tailscale.openFirewall = true;
 
   services.gnome.gnome-keyring.enable = true;
-  security.pam.services.greetd.enableGnomeKeyring = true;
 
   virtualisation.docker = {
     enable = true;
