@@ -12,6 +12,8 @@
 - `hosts/mbp/` contains macOS (nix-darwin) configs.
 - `modules/` contains shared home-manager modules.
 - `legacy/` holds shell scripts and config snippets.
+- `modules/hyprland.nix` manages Hyprland, waybar and session services.
+- `legacy/hyprland.lua` holds the Hyprland Lua config (keybinds, look).
 - `modules/terminal.nix` owns shell and tmux setup.
 
 ## Build / apply (system)

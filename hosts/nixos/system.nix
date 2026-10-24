@@ -77,6 +77,12 @@ in
     LC_TIME = "es_CO.UTF-8";
   };
 
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+    xwayland.enable = true;
+  };
+
   # Screen bright patch
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="backlight", KERNEL=="amdgpu_bl1", RUN+="${pkgs.coreutils}/bin/chgrp video /sys/devices/pci0000:00/0000:00:08.1/0000:04:00.0/drm/card1/card1-eDP-1/amdgpu_bl1/brightness"
@@ -105,6 +111,7 @@ in
   services.tailscale.openFirewall = true;
 
   services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
   virtualisation.docker = {
     enable = true;
@@ -133,6 +140,13 @@ in
 
   programs.nix-ld.enable = true;
 
+  services.getty.autologinUser = user;
+  environment.loginShellInit = ''
+    if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] && uwsm check may-start; then
+      exec uwsm start hyprland.desktop
+    fi
+  '';
+
   programs._1password-gui.polkitPolicyOwners = [ user ];
 
   environment.etc = {
@@ -147,6 +161,9 @@ in
 
   environment.systemPackages = with pkgs; [
     vim
+    nautilus
+    brightnessctl
+    libnotify
     ghostty
     obs-studio
     vesktop
@@ -164,6 +181,8 @@ in
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   environment.variables = {
     EDITOR = "nvim";
