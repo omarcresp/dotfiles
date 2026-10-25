@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   home.packages = with pkgs; [
     hyprquickframe
@@ -19,9 +19,56 @@
   gtk = {
     enable = true;
     colorScheme = "dark";
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    # libadwaita apps already follow colorScheme; forcing a GTK3 theme on them breaks styling.
+    gtk4.theme = null;
   };
 
-  services.swaync.enable = true;
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk3";
+    style.name = "adwaita-dark";
+  };
+
+  services.swaync = {
+    enable = true;
+    style = ''
+      @import url("file://${config.services.swaync.package}/etc/xdg/swaync/style.css");
+
+      :root {
+        --cc-bg: rgb(24, 25, 38);
+        --noti-border-color: #363a4f;
+        --noti-bg: 24, 25, 38;
+        --noti-bg-alpha: 0.96;
+        --noti-bg-darker: #1e2030;
+        --noti-bg-hover: #24273a;
+        --noti-bg-focus: rgba(54, 58, 79, 0.6);
+        --noti-close-bg: #363a4f;
+        --noti-close-bg-hover: #494d64;
+        --text-color: #cad3f5;
+        --text-color-disabled: #6e738d;
+        --bg-selected: #5d74b3;
+        --border-radius: 10px;
+        --font-size-body: 13px;
+        --font-size-summary: 14px;
+      }
+
+      * {
+        font-family: "JetBrainsMono", "Font Awesome 6 Pro";
+      }
+
+      .widget-dnd switch:checked {
+        background: #5d74b3;
+      }
+    '';
+  };
   services.blueman-applet.enable = true;
   services.network-manager-applet.enable = true;
   # Makes nm-applet run with --indicator so it lands in waybar's SNI tray.
