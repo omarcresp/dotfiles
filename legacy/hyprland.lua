@@ -99,6 +99,16 @@ hl.animation({ leaf = "borderangle", enabled = true, speed = 8, bezier = "easeIn
 hl.animation({ leaf = "fade", enabled = true, speed = 6, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "easeOut", style = "slide" })
 
+for _, class in ipairs({ "blueman-manager", "nm-connection-editor", "org.pulseaudio.pavucontrol" }) do
+  hl.window_rule({
+    name = "float-" .. class,
+    match = { class = class },
+    float = true,
+    size = "720 480",
+    center = true,
+  })
+end
+
 hl.gesture({ fingers = 4, direction = "horizontal", action = "workspace" })
 
 local function bindMod(keys, dispatcher, opts)
@@ -138,9 +148,9 @@ end
 bindMod("mouse:272", hl.dsp.window.drag(), { mouse = true })
 bindMod("mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-hl.bind("Print", hl.dsp.exec_cmd("wayshot --stdout | wl-copy"))
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("wayshot --file \"$HOME/Pictures/shots/shot_$(date +%Y-%m-%d_%H-%M-%S).png\""))
-bindMod("Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | satty --filename - --output-filename \"$HOME/Pictures/shots/shot_%Y-%m-%d_%H-%M-%S.png\" --copy-command wl-copy --early-exit"))
+hl.bind("Print", hl.dsp.exec_cmd("hyprquickframe"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("env HQF_MODE=window hyprquickframe"))
+bindMod("Print", hl.dsp.exec_cmd("env HQF_ACTION=edit hyprquickframe"))
 
 local hardwareKey = { locked = true, repeating = true }
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), hardwareKey)

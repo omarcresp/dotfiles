@@ -183,6 +183,7 @@ in
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
 
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 

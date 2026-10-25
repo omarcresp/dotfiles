@@ -1,10 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    wayshot
-    grim
-    slurp
-    satty
+    hyprquickframe
     wl-clipboard-rs
     pavucontrol
   ];
@@ -25,6 +22,10 @@
   };
 
   services.swaync.enable = true;
+  services.blueman-applet.enable = true;
+  services.network-manager-applet.enable = true;
+  # Makes nm-applet run with --indicator so it lands in waybar's SNI tray.
+  xsession.preferStatusNotifierItems = true;
   services.hyprpolkitagent.enable = true;
   services.awww.enable = true;
 
@@ -47,6 +48,17 @@
 
       window#waybar {
         color: #a5adcb;
+      }
+
+      menu,
+      tooltip {
+        background: #181926;
+        border: 1px solid #363a4f;
+        border-radius: 6px;
+      }
+
+      menuitem:hover {
+        background: #363a4f;
       }
 
       .modules-left,
@@ -132,7 +144,8 @@
 
         backlight = {
           device = "amdgpu_bl1";
-          format = " {icon}  {percent}%";
+          format = " {icon}";
+          tooltip-format = "Brightness {percent}%";
           format-icons = [
             ""
             ""
@@ -162,6 +175,30 @@
             urgent = "";
             default = "";
           };
+        };
+
+        network = {
+          format-wifi = "{icon}  {essid}";
+          format-ethernet = "󰈀";
+          format-disconnected = "󰤮";
+          format-icons = [
+            "󰤟"
+            "󰤢"
+            "󰤥"
+            "󰤨"
+          ];
+          tooltip-format-wifi = "{essid} ({signalStrength}%)";
+          on-click = "nm-connection-editor";
+        };
+
+        bluetooth = {
+          format = "󰂯";
+          format-off = "󰂲";
+          format-disabled = "󰂲";
+          format-connected = "󰂱 {num_connections}";
+          tooltip-format-connected = "{device_enumerate}";
+          tooltip-format-enumerate-connected = "{device_alias}";
+          on-click = "blueman-manager";
         };
 
         tray = {
