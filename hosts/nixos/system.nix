@@ -168,6 +168,7 @@ in
     ghostty
     obs-studio
     vesktop
+    remmina
 
     kitty
     mono
