@@ -145,6 +145,8 @@ for ws, key in ipairs(workspaceKeys) do
   bindMod("SHIFT + code:" .. (ws + 9), hl.dsp.window.move({ workspace = ws, follow = true }))
 end
 
+bindMod("SHIFT + p", hl.dsp.global("com.t3tools.T3Code:capture-window"))
+
 bindMod("mouse:272", hl.dsp.window.drag(), { mouse = true })
 bindMod("mouse:273", hl.dsp.window.resize(), { mouse = true })
 
