@@ -19,6 +19,11 @@
     extraConfig = builtins.readFile ../legacy/hyprland.lua;
   };
 
+  gtk = {
+    enable = true;
+    colorScheme = "dark";
+  };
+
   services.swaync.enable = true;
   services.hyprpolkitagent.enable = true;
   services.awww.enable = true;

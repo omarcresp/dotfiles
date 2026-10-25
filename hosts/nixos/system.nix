@@ -141,10 +141,11 @@ in
   programs.nix-ld.enable = true;
 
   services.getty.autologinUser = user;
-  environment.loginShellInit = ''
-    if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] && uwsm check may-start; then
+  # Fish runs environment.loginShellInit through fenv in a bash subprocess, so exec has to live here.
+  programs.fish.loginShellInit = ''
+    if test -z "$WAYLAND_DISPLAY"; and test "$(tty)" = /dev/tty1; and uwsm check may-start
       exec uwsm start hyprland.desktop
-    fi
+    end
   '';
 
   programs._1password-gui.polkitPolicyOwners = [ user ];
