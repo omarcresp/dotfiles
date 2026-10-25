@@ -99,7 +99,7 @@ hl.animation({ leaf = "borderangle", enabled = true, speed = 8, bezier = "easeIn
 hl.animation({ leaf = "fade", enabled = true, speed = 6, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 6, bezier = "easeOut", style = "slide" })
 
-hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+hl.gesture({ fingers = 4, direction = "horizontal", action = "workspace" })
 
 local function bindMod(keys, dispatcher, opts)
   hl.bind(mainMod .. " + " .. keys, dispatcher, opts)
