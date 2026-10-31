@@ -138,6 +138,12 @@ in
 
   programs.gamemode.enable = true;
 
+  # Compressed RAM swap so heavy modpacks don't page out to the NVMe swap first.
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
+
   programs.nix-ld.enable = true;
 
   services.getty.autologinUser = user;
