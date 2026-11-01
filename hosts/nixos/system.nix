@@ -26,6 +26,11 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernel.sysctl = {
     "vm.max_map_count" = 262144;
+    # Tuned for zram: swap idle pages into compressed RAM early, no swap readahead.
+    "vm.swappiness" = 180;
+    "vm.page-cluster" = 0;
+    "vm.watermark_boost_factor" = 0;
+    "vm.watermark_scale_factor" = 125;
   };
 
   networking.hostName = "nixos-${user}"; # Define your hostname.
@@ -40,6 +45,7 @@ in
       "video"
       "docker"
       "adbusers"
+      "gamemode"
     ];
   };
 
@@ -136,7 +142,17 @@ in
     };
   };
 
-  programs.gamemode.enable = true;
+  programs.gamemode = {
+    enable = true;
+    settings.general.renice = 10;
+  };
+
+  # Steam Deck's latency-focused scheduler; default autopilot mode, since --performance
+  # keeps every core awake and eats into the APU's shared CPU/GPU power budget.
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };
 
   # Compressed RAM swap so heavy modpacks don't page out to the NVMe swap first.
   zramSwap = {

@@ -66,11 +66,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793393789,
-        "narHash": "sha256-wnKZHO7jQikTrrzRR1XwfaP8b4h0LtT6zmYS16p1bIY=",
+        "lastModified": 1793525575,
+        "narHash": "sha256-+dm2lTG8FqayVIXcnUQP1Ku74lbsUXa8r+Pko3UJafM=",
         "owner": "omarcresp",
         "repo": "cliproxyapi-flake",
-        "rev": "0a2862de761a96760b878e0a271ff867b592d6ff",
+        "rev": "a99e9904f747be4b5fa4742eb46636a71d0431b6",
         "type": "github"
       },
       "original": {
@@ -674,11 +674,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793436428,
-        "narHash": "sha256-jaStqusr90PU5nrU9Uyl6hYR4kwBO4EmrXi8GTsGbP4=",
+        "lastModified": 1793525911,
+        "narHash": "sha256-lK+j0WRfziJH1okKX4q7Z82eVrg04ir+Ja14oPkFdQM=",
         "owner": "omarcresp",
         "repo": "t3code-flake",
-        "rev": "ef1fc5336635ef855572c5b756fc8585e8a65e66",
+        "rev": "7db4cb32513252da0aa42fda5698d978dca625ba",
         "type": "github"
       },
       "original": {
@@ -776,11 +776,11 @@
         "systems": "systems_8"
       },
       "locked": {
-        "lastModified": 1793362835,
-        "narHash": "sha256-7oswnWgdOE51wX39ZeR9g1/IbNH81TNXakaolbrUIsc=",
+        "lastModified": 1793535341,
+        "narHash": "sha256-et6tBWFwY9IBPNPwTVriBn6XtNHaMB5wLeKEO6WZO38=",
         "owner": "mitchellh",
         "repo": "zig-overlay",
-        "rev": "335b6c4be4a86d00c329941f6a72968cea58e1f1",
+        "rev": "a1453f732a4970aad607a3ec4a1ce0130242dfb7",
         "type": "github"
       },
       "original": {
