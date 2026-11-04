@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   user,
   inputs,
@@ -113,6 +114,40 @@ in
 
   services.upower.enable = true;
 
+  services.power-profiles-daemon.enable = false;
+  services.tlp = {
+    enable = true;
+    pd.enable = true;
+    settings = {
+      TLP_AUTO_SWITCH = 1;
+      TLP_PROFILE_AC = "PRF";
+      TLP_PROFILE_BAT = "SAV";
+
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_SAV = "powersave";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_SAV = "power";
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_SAV = 0;
+
+      # Automatic GPU clocks leave the shared APU power budget available to the CPU.
+      RADEON_DPM_PERF_LEVEL_ON_AC = "auto";
+      RADEON_DPM_PERF_LEVEL_ON_SAV = "low";
+      AMDGPU_ABM_LEVEL_ON_AC = 0;
+      AMDGPU_ABM_LEVEL_ON_SAV = 4;
+
+      PCIE_ASPM_ON_AC = "default";
+      PCIE_ASPM_ON_SAV = "powersupersave";
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "auto";
+      WIFI_PWR_ON_AC = "off";
+      WIFI_PWR_ON_BAT = "on";
+      SOUND_POWER_SAVE_ON_AC = 0;
+      SOUND_POWER_SAVE_ON_BAT = 1;
+      USB_AUTOSUSPEND = 1;
+    };
+  };
+
   services.tailscale.enable = true;
   services.tailscale.openFirewall = true;
 
@@ -147,11 +182,17 @@ in
     settings.general.renice = 10;
   };
 
-  # Steam Deck's latency-focused scheduler; default autopilot mode, since --performance
-  # keeps every core awake and eats into the APU's shared CPU/GPU power budget.
+  # Follow TLP's charger profile rather than choosing a mode from CPU load.
   services.scx = {
     enable = true;
     scheduler = "scx_lavd";
+    extraArgs = [ "--autopower" ];
+  };
+  systemd.services.scx = {
+    wants = [ "tlp-pd.service" ];
+    after = [ "tlp-pd.service" ];
+    # TLP's profile API starts after multi-user.target.
+    wantedBy = lib.mkForce [ "graphical.target" ];
   };
 
   # Compressed RAM swap so heavy modpacks don't page out to the NVMe swap first.
@@ -199,7 +240,12 @@ in
     }))
 
     inputs.zen-browser.packages."${system}".default
-    inputs.yt-x.packages."${system}".default
+    (inputs.yt-x.packages."${system}".default.overrideAttrs (old: {
+      postFixup = (old.postFixup or "") + ''
+        # yt-x passes Bash syntax to fzf, which otherwise uses the login shell.
+        wrapProgram "$out/bin/yt-x" --set SHELL "${pkgs.bash}/bin/bash"
+      '';
+    }))
     inputs.cursor.packages."${system}".default
   ];
 
