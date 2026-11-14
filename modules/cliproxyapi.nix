@@ -129,6 +129,10 @@ in
     apiKeyCommand = catCommand "CLIPROXYAPI_PROXY_KEY";
 
     tailscaleServePort = port;
+
+    # Fetch the upstream model catalog (at startup, then every 3 hours) so new
+    # models work without bumping the package.
+    localModel = false;
   };
 
   imports = [
