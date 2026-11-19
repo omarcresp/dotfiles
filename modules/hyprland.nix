@@ -1,5 +1,57 @@
-{ config, pkgs, ... }:
 {
+  config,
+  osConfig,
+  pkgs,
+  ...
+}:
+let
+  # TLP switches to power-saver on battery; the panel's 40Hz mode saves a little more there.
+  panelRefreshFollowsProfile = pkgs.writeShellApplication {
+    name = "panel-refresh-follows-profile";
+    runtimeInputs = [
+      pkgs.systemd
+      pkgs.glib
+      osConfig.programs.hyprland.package
+    ];
+    text = ''
+      service=org.freedesktop.UPower.PowerProfiles
+      path=/org/freedesktop/UPower/PowerProfiles
+      applied=""
+
+      apply() {
+        local rate=60
+        if [ "$(busctl --system get-property "$service" "$path" "$service" ActiveProfile)" = 's "power-saver"' ]; then
+          rate=40.04
+        fi
+        if [ "$rate" != "$applied" ]; then
+          hyprctl eval "hl.monitor({ output = \"eDP-1\", mode = \"1366x768@$rate\", position = \"0x0\", scale = 1 })"
+          applied=$rate
+        fi
+      }
+
+      apply
+      gdbus monitor --system --dest "$service" --object-path "$path" \
+        | while read -r line; do
+          case "$line" in *ActiveProfile*) apply ;; esac
+        done
+    '';
+  };
+in
+{
+  systemd.user.services.panel-refresh-follows-profile = {
+    Unit = {
+      Description = "Lower the laptop panel refresh rate in TLP power-saver";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${panelRefreshFollowsProfile}/bin/panel-refresh-follows-profile";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   home.packages = with pkgs; [
     hyprquickframe
     wl-clipboard-rs

@@ -43,9 +43,9 @@ let
           .env = ((.env // {}) + {
             ANTHROPIC_BASE_URL: $base,
             ANTHROPIC_AUTH_TOKEN: $token,
-            ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-5",
-            ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-5",
-            ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-4-5-20251001"
+            ANTHROPIC_DEFAULT_OPUS_MODEL: "claude-opus-5-5",
+            ANTHROPIC_DEFAULT_SONNET_MODEL: "claude-sonnet-5-5",
+            ANTHROPIC_DEFAULT_HAIKU_MODEL: "claude-haiku-5-5"
           })
         ' "$claude_settings" > "$claude_settings.tmp"
         chmod 600 "$claude_settings.tmp"
